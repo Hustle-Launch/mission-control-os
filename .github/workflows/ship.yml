@@ -11,8 +11,8 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ship-preview-${{ github.ref }}
-  cancel-in-progress: true
+  group: ship-preview-${{ github.run_id }}
+  cancel-in-progress: false
 
 jobs:
   ship:
