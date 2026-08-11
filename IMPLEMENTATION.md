@@ -5,15 +5,18 @@ Goal: **every ADR and DSD fully satisfied** in code. Monorepo is pragmatic (ADR-
 ## Layout
 
 ```
-apps/web          — TanStack Router + Vite + Clerk + Convex + design system + /api
-apps/desktop      — Electron + Effect lifecycle + safeStorage Agent Token + install IPC
-apps/agent        — Rust Local Agent (daemon, crawl, installers)
-apps/tui          — Rust Mocha ANSI cockpit
-packages/tokens   — Mocha, Flamingo/Sky, φ scale, Max CSS, glass
-packages/protocol — Shared types + API path catalog
-apps/web/convex   — Schema + domain functions
+apps/web                  — TanStack Router + Vite + Clerk + Convex + design system + /api
+apps/desktop              — Electron + Effect lifecycle + safeStorage Agent Token + install IPC
+apps/agent                — Rust Local Agent (daemon, crawl, installers)
+apps/tui                  — Rust Mocha ANSI cockpit
+apps/cli                  — Master CLI automation engine (mc-cli for humans + AI agents)
+packages/tokens           — Mocha, Flamingo/Sky, φ scale, Max CSS, glass
+packages/protocol         — Shared types + API path catalog
+packages/google-integrations — Shared GBP/GSC/GA4 libraries + report aggregation engine
+apps/web/convex           — Schema + domain functions
 docs/adr · docs/dsd
 ```
+
 
 ## Live platform
 
@@ -67,8 +70,10 @@ docs/adr · docs/dsd
 | **0043–0044** Automations | | builder UI + automations.ts |
 | **0045** Admin/Member | | org roles + portal roles + billing admin gate |
 | **0046** Inline then Trigger | | handoffs + `/trigger/handoffs` claim/complete + `@mc/trigger-worker` poll |
+| **0047** Shared Google libs & CLI | GSC/GBP/GA4 TS libs + Master CLI | `packages/google-integrations` + `apps/cli` + protocol contracts |
 
 ## DSD matrix
+
 
 | DSD | Status |
 |-----|--------|
@@ -108,6 +113,8 @@ cargo run -p mc-tui
 | Clerk production instance | Dev keys on Vercel previews |
 | Stripe live keys | Checkout + webhook code live; needs Convex env + Stripe Dashboard prices |
 | ADR-0017 multi-repo split | Deferred intentionally |
+| ADR-0047 Google OAuth keys | Shared TS libs & CLI scaffolded; production Google Cloud App OAuth client ID/secret TBD |
+
 
 ## Cost control
 
