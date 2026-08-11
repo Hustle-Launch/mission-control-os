@@ -103,7 +103,7 @@ function usePrefersReducedMotion() {
 
 /** Draws dynamic animated NASA MCR screen demos onto a 2D canvas texture */
 function useScreenTexture(stationId: string, accentHex: string) {
-  const textureRef = useRef<THREE.CanvasTexture | null>(null);
+  const [texture, setTexture] = useState<THREE.CanvasTexture | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -111,10 +111,10 @@ function useScreenTexture(stationId: string, accentHex: string) {
     canvas.width = 640;
     canvas.height = 400;
     canvasRef.current = canvas;
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.minFilter = THREE.LinearFilter;
-    texture.magFilter = THREE.LinearFilter;
-    textureRef.current = texture;
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.minFilter = THREE.LinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    setTexture(tex);
   }, []);
 
   const drawScreen = (time: number) => {
@@ -356,12 +356,12 @@ function useScreenTexture(stationId: string, accentHex: string) {
       });
     }
 
-    if (textureRef.current) {
-      textureRef.current.needsUpdate = true;
+    if (texture) {
+      texture.needsUpdate = true;
     }
   };
 
-  return { texture: textureRef.current, drawScreen };
+  return { texture, drawScreen };
 }
 
 /** 3D NASA Mission Control Room (MCR) Console Desk with animated monitor */
