@@ -1,9 +1,12 @@
-name: Ship / Preview Deploy
+name: Ship / Preview Deploy (Blacksmith)
 
 on:
   push:
-    branches-ignore:
+    branches:
       - main
+      - fix/*
+      - feat/*
+      - preview/*
   pull_request:
   workflow_dispatch:
 
@@ -13,8 +16,8 @@ concurrency:
 
 jobs:
   ship:
-    name: Build & Deploy Preview to Vercel
-    runs-on: ubuntu-latest
+    name: Build & Deploy Preview to Vercel (Blacksmith)
+    runs-on: blacksmith
     steps:
       - uses: actions/checkout@v4
 
