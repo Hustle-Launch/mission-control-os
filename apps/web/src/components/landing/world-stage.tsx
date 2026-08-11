@@ -443,19 +443,27 @@ function MCRConsoleMonitor({
   return (
     <Float speed={1.1} rotationIntensity={0.08} floatIntensity={0.2}>
       <group ref={group} position={position} rotation={rotation}>
-        {/* Console Desk Base */}
-        <mesh position={[0, -1.25, 0]}>
-          <boxGeometry args={[3.6, 0.25, 1.6]} />
-          <meshStandardMaterial color="#181825" metalness={0.8} roughness={0.3} />
-        </mesh>
-        <mesh position={[0, -0.6, -0.2]}>
-          <boxGeometry args={[3.2, 1.1, 0.8]} />
+        {/* Console Lower Cabinet Base */}
+        <mesh position={[0, -1.6, -0.1]}>
+          <boxGeometry args={[3.2, 1.2, 0.8]} />
           <meshStandardMaterial color="#11111b" metalness={0.9} roughness={0.2} />
         </mesh>
 
+        {/* Console Desk Surface Countertop */}
+        <mesh position={[0, -0.925, 0.1]}>
+          <boxGeometry args={[3.6, 0.15, 1.0]} />
+          <meshStandardMaterial color="#181825" metalness={0.8} roughness={0.3} />
+        </mesh>
+
+        {/* Monitor Neck / Mount Stand connecting desk surface to bottom of bezel */}
+        <mesh position={[0, -0.725, -0.02]}>
+          <boxGeometry args={[0.8, 0.25, 0.2]} />
+          <meshStandardMaterial color="#181825" metalness={0.85} roughness={0.2} />
+        </mesh>
+
         {/* Console Monitor Bezel Frame */}
-        <mesh position={[0, 0.4, 0]}>
-          <boxGeometry args={[3.4, 2.15, 0.12]} />
+        <mesh position={[0, 0.5, 0]}>
+          <boxGeometry args={[3.5, 2.2, 0.12]} />
           <meshStandardMaterial
             color="#181825"
             metalness={0.85}
@@ -466,8 +474,8 @@ function MCRConsoleMonitor({
         </mesh>
 
         {/* Monitor Screen Display (Canvas Texture) */}
-        <mesh position={[0, 0.4, 0.07]}>
-          <planeGeometry args={[3.2, 1.95]} />
+        <mesh position={[0, 0.5, 0.07]}>
+          <planeGeometry args={[3.3, 2.0]} />
           {texture ? (
             <meshBasicMaterial map={texture} toneMapped={false} />
           ) : (
@@ -476,8 +484,8 @@ function MCRConsoleMonitor({
         </mesh>
 
         {/* Outer Glowing Neon Border Accent */}
-        <mesh position={[0, 0.4, -0.01]}>
-          <boxGeometry args={[3.48, 2.23, 0.08]} />
+        <mesh position={[0, 0.5, -0.01]}>
+          <boxGeometry args={[3.58, 2.28, 0.08]} />
           <meshStandardMaterial
             color={color}
             emissive={color}
@@ -489,7 +497,7 @@ function MCRConsoleMonitor({
 
         {/* NASA MCR Status Lights strip on top of monitor */}
         {[ -1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2 ].map((xOffset, i) => (
-          <mesh key={i} position={[xOffset, 1.55, 0.05]}>
+          <mesh key={i} position={[xOffset, 1.65, 0.05]}>
             <boxGeometry args={[0.2, 0.06, 0.06]} />
             <meshStandardMaterial
               color={i % 2 === 0 ? C.sky : color}
@@ -536,12 +544,13 @@ function CameraRig({ progress }: { progress: ProgressRef }) {
     const z1 = Math.min(i + 1, n - 1) * 7;
     const z = THREE.MathUtils.lerp(z0, z1, ease);
 
-    // NASA MCR scanner pan trajectory
-    const x = Math.sin(p * Math.PI * 1.8) * 1.8;
-    const y = 1.0 + Math.cos(p * Math.PI * 2) * 0.2;
+    // NASA MCR scanner pan trajectory - position camera to frame screens cleanly
+    const currentSideOffset = (Math.round(p * (n - 1)) % 2 === 0) ? -1.1 : 1.1;
+    const x = Math.sin(p * Math.PI * 1.8) * 1.6;
+    const y = 0.7 + Math.cos(p * Math.PI * 2) * 0.15;
 
     camera.position.set(x, y, z + 4.8);
-    camera.lookAt(x * 0.15, 0.4, z);
+    camera.lookAt(currentSideOffset * 0.35, 0.5, z);
 
     if (camera instanceof THREE.PerspectiveCamera) {
       camera.fov = 42;
