@@ -11,6 +11,7 @@
     "dev:trigger": "bun run --filter @mc/trigger-worker dev",
     "build": "bun run --filter @mc/web build",
     "typecheck": "bun run --filter '*' typecheck",
+    "test": "bun test",
     "agent": "cargo run --manifest-path apps/agent/Cargo.toml",
     "agent:build": "cargo build --release --manifest-path apps/agent/Cargo.toml",
     "desktop": "bun run --filter @mc/desktop dev",

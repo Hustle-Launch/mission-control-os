@@ -30,8 +30,11 @@ Design grilling paused with shared understanding of the decisions in `docs/adr/`
 21. **Clerk + Client User** — Invite implementation (Clerk invitations vs app tokens + Resend).
 22. **Billing** — When and how (per seat, per Client, usage); out of grill scope so far.
 23. **Trademark / Mission Control** — Apple name collision mitigation for marketing.
+24. **Google Indexing API & Inspection Quotas** — Batch size caps and daily quota management per agency workspace across Master CLI and Web UI (ADR-0047).
+25. **Google Business Profile OAuth Scope Delegation** — User OAuth vs Service Account delegation for agency staff operating client GBP locations (ADR-0047).
 
 ## Explicitly deferred product modules
+
 
 - Citations / link-building acquisition trackers (original wishlist; not ADRd into first ship detail)
 - Full PostHog/GA portal caching (mentioned early; portal is graphs + shared findings + Client CRM)

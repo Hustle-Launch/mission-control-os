@@ -1,0 +1,23 @@
+{
+  "name": "@mc/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "mc-cli": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "start": "bun run ./src/index.ts"
+  },
+  "dependencies": {
+    "@mc/google-integrations": "workspace:*",
+    "@mc/protocol": "workspace:*",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.8.0"
+  }
+}
+

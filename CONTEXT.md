@@ -309,3 +309,16 @@ _Avoid_: Browser crawl (vague), SPA mode
 **HTTP-only Crawl**:
 A Crawl Run mode that fetches response bodies without executing JavaScript. Opt-in for speed or special cases; not the default.
 _Avoid_: Quick scan (marketing-only name unless productized)
+
+**Google Integrations (`@mc/google-integrations`)**:
+Shared TypeScript libraries providing unified access to Google Search Console (GSC live URL inspection, indexing requests, query/rank metrics), Google Business Profile (GBP posts, photos, reviews, call/message metrics), and Google Analytics 4 (GA4 sessions, engagement, conversions)—ADR-0047.
+_Avoid_: Direct per-app fetch calls, un-typed Google SDK wrappers
+
+**Master CLI (`mc-cli`)**:
+The master CLI automation tool (`apps/cli`) wrapping shared TypeScript libraries and Control Plane API routes. Enables human shell power-users, scripts, TUI, and AI subagents to trigger management tasks (indexing requests, GBP posts) and poll aggregated metrics—ADR-0047.
+_Avoid_: One-off script, TUI-only backend
+
+**Unified Performance View**:
+Aggregated reporting model and UI components combining GSC organic traffic/rank, GBP local calls/messages/posts, and GA4 website conversions into simplified performance views and time-series charts for Agency Client Portal and operator views—ADR-0047.
+_Avoid_: Separate Google silos, multi-tab analytics wall
+

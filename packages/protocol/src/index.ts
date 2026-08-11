@@ -158,7 +158,21 @@ export const API = {
   billing: {
     mine: "/api/billing/mine",
   },
+  google: {
+    gscInspect: "/api/google/gsc/inspect",
+    gscIndex: "/api/google/gsc/index",
+    gscMetrics: "/api/google/gsc/metrics",
+    gbpPostsList: "/api/google/gbp/posts/list",
+    gbpPostsAdd: "/api/google/gbp/posts/add",
+    gbpMetrics: "/api/google/gbp/metrics",
+    ga4Metrics: "/api/google/ga4/metrics",
+    aggregateReport: "/api/google/report/aggregate",
+    createInvite: "/api/google/connections/invite",
+    claimInvite: "/api/google/connections/claim",
+  },
 } as const;
+
+
 
 /** Finding status set (ADR-0023) */
 export const FINDING_STATUSES = [
@@ -238,3 +252,96 @@ export const AUTOMATION_TRIGGERS = [
   "message.received",
   "tag.added",
 ] as const;
+
+/** Shared Google API & Master CLI Contracts (ADR-0047) */
+export interface GscUrlInspectionResult {
+  url: string;
+  verdict: "PASS" | "FAIL" | "NEUTRAL";
+  coverageState: string;
+  indexingState: string;
+  lastCrawlTime?: string;
+  canonicalUrl?: string;
+}
+
+export interface GscIndexingRequestBody {
+  siteId: SiteId;
+  urls: string[];
+  type?: "URL_UPDATED" | "URL_DELETED";
+}
+
+export interface GbpPostPayload {
+  locationId: LocationId;
+  summary: string;
+  actionType?: "BOOK" | "ORDER" | "SHOP" | "LEARN_MORE" | "SIGN_UP";
+  actionUrl?: string;
+  mediaUrls?: string[];
+  scheduledAt?: number;
+}
+
+export interface GbpMetricsSummary {
+  locationId: LocationId;
+  calls: number;
+  messages: number;
+  directionRequests: number;
+  websiteClicks: number;
+  searchImpressions: number;
+}
+
+export interface Ga4MetricsSummary {
+  siteId: SiteId;
+  activeUsers: number;
+  sessions: number;
+  engagementRate: number;
+  conversions: number;
+  topTrafficSources: Array<{ source: string; users: number }>;
+}
+
+export interface UnifiedPerformanceReport {
+  clientId: ClientId;
+  period: "7d" | "30d" | "90d" | "12m";
+  generatedAt: number;
+  summary: {
+    totalSessions: number;
+    totalConversions: number;
+    gscTotalClicks: number;
+    gscTotalImpressions: number;
+    gscAveragePosition: number;
+    gbpTotalCalls: number;
+    gbpTotalMessages: number;
+    gbpTotalDirections: number;
+  };
+  timeSeries: Array<{
+    date: string;
+    sessions: number;
+    clicks: number;
+    impressions: number;
+    calls: number;
+    messages: number;
+  }>;
+}
+
+export interface MasterCliRunArgs {
+  command: "gsc:inspect" | "gsc:index" | "gbp:post" | "report:aggregate" | "poll:status";
+  targetId: string;
+  params?: Record<string, unknown>;
+  outputFormat?: "text" | "json" | "csv";
+}
+
+/** Google OAuth Connection Modes & Client Invite Contracts (ADR-0039 / ADR-0047) */
+export type ConnectedAccountScope = "agency_master" | "client_direct" | "client_invite";
+
+export interface CreateGoogleAuthInviteBody {
+  clientId: ClientId;
+  targetServices?: Array<"gsc" | "gbp" | "ga4">;
+  expiresInDays?: number;
+  recipientEmail?: string;
+}
+
+export interface GoogleAuthInviteEnvelope {
+  inviteUrl: string;
+  token: string;
+  expiresAt: number;
+  clientId: ClientId;
+}
+
+
