@@ -4,7 +4,6 @@ import {
   EffectComposer,
   Bloom,
   Vignette,
-  DepthOfField,
   ChromaticAberration,
 } from "@react-three/postprocessing";
 import {
@@ -26,7 +25,7 @@ gsap.registerPlugin(ScrollTrigger);
 const C = {
   base: "#1e1e2e",
   mantle: "#181825",
-  crust: "#0b0c16",
+  crust: "#070810",
   text: "#cdd6f4",
   sub: "#a6adc8",
   sky: "#89dceb",
@@ -112,7 +111,7 @@ function usePrefersReducedMotion() {
   return reduced;
 }
 
-/* ───────────────────── 2070 HUD Canvas Rendering ───────────────────── */
+/* ───────────────────── 2070 HUD Canvas Rendering (1600x1000 Ultra-Crisp) ───────────────────── */
 
 function roundRect(
   ctx: CanvasRenderingContext2D,
@@ -140,7 +139,7 @@ function roundRect(
   }
 }
 
-/** Draws 2070 Glass HUD Panel with Glowing Bevels & Tech Brackets */
+/** Draws Razor-Thin Glass Panel with Tech Accents */
 function drawGlassPanel(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -148,25 +147,25 @@ function drawGlassPanel(
   w: number,
   h: number,
   accentHex: string,
-  r = 10,
+  r = 12,
 ) {
-  /* Translucent glass backdrop */
+  /* Ultra-translucent glass backdrop */
   const pGrad = ctx.createLinearGradient(x, y, x + w, y + h);
-  pGrad.addColorStop(0, "rgba(18, 20, 34, 0.85)");
-  pGrad.addColorStop(1, "rgba(10, 11, 20, 0.92)");
+  pGrad.addColorStop(0, "rgba(16, 18, 30, 0.88)");
+  pGrad.addColorStop(1, "rgba(8, 9, 16, 0.94)");
   ctx.fillStyle = pGrad;
   roundRect(ctx, x, y, w, h, r);
   ctx.fill();
 
-  /* Glowing inner border */
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.07)";
-  ctx.lineWidth = 1;
+  /* Razor sharp inner border */
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.09)";
+  ctx.lineWidth = 1.5;
   roundRect(ctx, x, y, w, h, r);
   ctx.stroke();
 
   /* Tech corner brackets */
-  const cl = 12;
-  ctx.strokeStyle = accentHex + "90";
+  const cl = 14;
+  ctx.strokeStyle = accentHex + "b0";
   ctx.lineWidth = 2;
 
   // Top-Left
@@ -184,7 +183,7 @@ function drawGlassPanel(
   ctx.stroke();
 }
 
-/** Render 2070 Holographic Visor Frame & Header Telemetry */
+/** Render Visor Header Telemetry */
 function draw2070VisorChrome(
   ctx: CanvasRenderingContext2D,
   w: number,
@@ -193,91 +192,90 @@ function draw2070VisorChrome(
   accentHex: string,
   time: number,
 ) {
-  /* Dark space background with deep radial gradient */
+  /* Dark deep radial space background */
   const bgGrad = ctx.createRadialGradient(
     w / 2,
     h / 2,
-    50,
+    100,
     w / 2,
     h / 2,
-    w * 0.7,
+    w * 0.75,
   );
-  bgGrad.addColorStop(0, "#0e101d");
-  bgGrad.addColorStop(0.7, "#080912");
-  bgGrad.addColorStop(1, "#040409");
+  bgGrad.addColorStop(0, "#0d0e1a");
+  bgGrad.addColorStop(0.7, "#060710");
+  bgGrad.addColorStop(1, "#030307");
   ctx.fillStyle = bgGrad;
   ctx.fillRect(0, 0, w, h);
 
-  /* Subtle holographic grid lines */
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.025)";
+  /* Precise grid overlay */
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
   ctx.lineWidth = 1;
-  for (let gx = 30; gx < w; gx += 30) {
+  for (let gx = 40; gx < w; gx += 40) {
     ctx.beginPath();
-    ctx.moveTo(gx, 50);
-    ctx.lineTo(gx, h - 30);
+    ctx.moveTo(gx, 65);
+    ctx.lineTo(gx, h - 40);
     ctx.stroke();
   }
-  for (let gy = 60; gy < h - 30; gy += 30) {
+  for (let gy = 80; gy < h - 40; gy += 40) {
     ctx.beginPath();
-    ctx.moveTo(30, gy);
-    ctx.lineTo(w - 30, gy);
+    ctx.moveTo(40, gy);
+    ctx.lineTo(w - 40, gy);
     ctx.stroke();
   }
 
-  /* 2070 Header Bar */
+  /* Header Bar */
   const hdrGrad = ctx.createLinearGradient(0, 0, w, 0);
-  hdrGrad.addColorStop(0, "rgba(255, 255, 255, 0.05)");
+  hdrGrad.addColorStop(0, "rgba(255, 255, 255, 0.06)");
   hdrGrad.addColorStop(0.5, "rgba(255, 255, 255, 0.02)");
-  hdrGrad.addColorStop(1, "rgba(255, 255, 255, 0.05)");
+  hdrGrad.addColorStop(1, "rgba(255, 255, 255, 0.06)");
   ctx.fillStyle = hdrGrad;
-  ctx.fillRect(0, 0, w, 52);
+  ctx.fillRect(0, 0, w, 68);
 
-  /* Laser line separator */
+  /* Thin Laser separator line */
   const laserGrad = ctx.createLinearGradient(0, 0, w, 0);
   laserGrad.addColorStop(0, accentHex + "00");
   laserGrad.addColorStop(0.2, accentHex);
   laserGrad.addColorStop(0.8, accentHex);
   laserGrad.addColorStop(1, accentHex + "00");
   ctx.fillStyle = laserGrad;
-  ctx.fillRect(0, 50, w, 2);
+  ctx.fillRect(0, 66, w, 2);
 
-  /* Pulsing Reactor Node Status */
+  /* Pulsing Node Status */
   const pulse = 0.5 + Math.sin(time * 5) * 0.5;
   ctx.save();
-  ctx.shadowBlur = 14;
+  ctx.shadowBlur = 16;
   ctx.shadowColor = accentHex;
   ctx.fillStyle = accentHex;
   ctx.beginPath();
-  ctx.arc(28, 26, 5, 0, Math.PI * 2);
+  ctx.arc(36, 34, 6, 0, Math.PI * 2);
   ctx.fill();
   ctx.restore();
 
-  /* Sci-fi System Header */
+  /* Crisp Header Title */
   ctx.fillStyle = "#ffffff";
-  ctx.font = "900 13px system-ui, sans-serif";
-  ctx.letterSpacing = "0.15em";
+  ctx.font = "900 16px system-ui, sans-serif";
   ctx.fillText(
     `MISSION CONTROL 2070 // HOLO_SYS_${stationId.toUpperCase()}`,
-    46,
-    30,
+    58,
+    40,
   );
 
   /* Real-time telemetry feed */
   ctx.fillStyle = accentHex;
-  ctx.font = "bold 11px monospace";
+  ctx.font = "bold 13px monospace";
   ctx.textAlign = "right";
-  ctx.fillText(`SYSTEM STABLE · 120 FPS · QUANTUM SYNC`, w - 24, 30);
+  ctx.fillText(`SYSTEM STABLE · 120 FPS · QUANTUM SYNC`, w - 32, 40);
   ctx.textAlign = "left";
 
-  /* Bottom status rail */
-  ctx.fillStyle = "rgba(10, 11, 20, 0.9)";
-  ctx.fillRect(0, h - 28, w, 28);
-  ctx.fillStyle = "#6c7086";
-  ctx.font = "10px monospace";
-  ctx.fillText("HOLO_SHELL v4.8.2 // LATENCY: 0.2ms // ENCRYPTION: 4096-QUANTUM", 20, h - 10);
+  /* Bottom status bar */
+  ctx.fillStyle = "rgba(8, 9, 16, 0.95)";
+  ctx.fillRect(0, h - 36, w, 36);
+  ctx.fillStyle = "#a6adc8";
+  ctx.font = "bold 12px monospace";
+  ctx.fillText("HOLO_SLATE v5.2 // LATENCY: 0.1ms // ENCRYPTION: QUANTUM-4096", 28, h - 14);
 }
 
-/* ───────────────────── Station Specific 2070 HUD Content ───────────────────── */
+/* ───────────────────── Station Specific Crisp HUD Content ───────────────────── */
 
 function drawAuditScreen2070(
   ctx: CanvasRenderingContext2D,
@@ -286,27 +284,26 @@ function drawAuditScreen2070(
   time: number,
   accent: string,
 ) {
-  /* Left Glass Dial Panel */
-  drawGlassPanel(ctx, 30, 70, 530, h - 118, accent, 12);
+  drawGlassPanel(ctx, 40, 90, 700, h - 150, accent, 14);
 
   ctx.fillStyle = accent;
-  ctx.font = "bold 13px system-ui";
-  ctx.fillText("CYBERNETIC AUDIT SCANNER", 56, 104);
+  ctx.font = "bold 16px system-ui";
+  ctx.fillText("CYBERNETIC AUDIT SCANNER", 72, 134);
 
-  const cx = 295;
-  const cy = 290;
-  const r = 105;
+  const cx = 390;
+  const cy = 380;
+  const r = 140;
 
-  /* Rotating Outer Telemetry Tick Ring */
+  /* Rotating Outer Tick Ring */
   ctx.save();
   ctx.translate(cx, cy);
-  ctx.rotate(time * 0.3);
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
-  ctx.lineWidth = 1.5;
-  for (let i = 0; i < 36; i++) {
-    const angle = (i / 36) * Math.PI * 2;
-    const innerR = r + 16;
-    const outerR = r + (i % 3 === 0 ? 24 : 20);
+  ctx.rotate(time * 0.35);
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.18)";
+  ctx.lineWidth = 2;
+  for (let i = 0; i < 48; i++) {
+    const angle = (i / 48) * Math.PI * 2;
+    const innerR = r + 20;
+    const outerR = r + (i % 4 === 0 ? 32 : 26);
     ctx.beginPath();
     ctx.moveTo(Math.cos(angle) * innerR, Math.sin(angle) * innerR);
     ctx.lineTo(Math.cos(angle) * outerR, Math.sin(angle) * outerR);
@@ -314,11 +311,11 @@ function drawAuditScreen2070(
   }
   ctx.restore();
 
-  /* Radial Health Track */
+  /* Radial Track */
   ctx.beginPath();
   ctx.arc(cx, cy, r, Math.PI * 0.75, Math.PI * 2.25);
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.06)";
-  ctx.lineWidth = 18;
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+  ctx.lineWidth = 22;
   ctx.lineCap = "round";
   ctx.stroke();
 
@@ -328,54 +325,54 @@ function drawAuditScreen2070(
   const endA = startA + Math.PI * 1.5 * scoreProgress;
 
   ctx.save();
-  ctx.shadowBlur = 24;
+  ctx.shadowBlur = 28;
   ctx.shadowColor = accent;
   ctx.beginPath();
   ctx.arc(cx, cy, r, startA, endA);
   ctx.strokeStyle = accent;
-  ctx.lineWidth = 18;
+  ctx.lineWidth = 22;
   ctx.lineCap = "round";
   ctx.stroke();
   ctx.restore();
 
   /* Central Score Text */
   ctx.save();
-  ctx.shadowBlur = 30;
+  ctx.shadowBlur = 36;
   ctx.shadowColor = accent;
   ctx.fillStyle = "#ffffff";
-  ctx.font = "900 56px system-ui";
+  ctx.font = "900 76px system-ui";
   ctx.textAlign = "center";
-  ctx.fillText(`${Math.round(scoreProgress * 100)}`, cx, cy + 18);
+  ctx.fillText(`${Math.round(scoreProgress * 100)}`, cx, cy + 24);
   ctx.restore();
 
   ctx.fillStyle = accent;
-  ctx.font = "bold 11px system-ui";
+  ctx.font = "bold 14px system-ui";
   ctx.textAlign = "center";
-  ctx.fillText("OPTIMIZED PARALLEL CRAWL", cx, cy + 46);
+  ctx.fillText("OPTIMIZED PARALLEL CRAWL", cx, cy + 62);
   ctx.textAlign = "left";
 
-  /* Metrics summary strip */
+  /* Metrics Summary */
   const metrics = [
     { label: "PAGES AUDITED", val: "48,290" },
     { label: "LATENCY", val: "0.14s" },
     { label: "LOCAL HARDWARE", val: "100%" },
   ];
   metrics.forEach((m, i) => {
-    const mx = 60 + i * 165;
-    ctx.fillStyle = "#6c7086";
-    ctx.font = "10px system-ui";
-    ctx.fillText(m.label, mx, h - 74);
+    const mx = 80 + i * 220;
+    ctx.fillStyle = "#a6adc8";
+    ctx.font = "bold 12px system-ui";
+    ctx.fillText(m.label, mx, h - 96);
     ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 16px system-ui";
-    ctx.fillText(m.val, mx, h - 52);
+    ctx.font = "900 22px system-ui";
+    ctx.fillText(m.val, mx, h - 68);
   });
 
   /* Right Panel — Severity Breakdown */
-  drawGlassPanel(ctx, 580, 70, w - 610, h - 118, accent, 12);
+  drawGlassPanel(ctx, 770, 90, w - 810, h - 150, accent, 14);
 
   ctx.fillStyle = "#ffffff";
-  ctx.font = "bold 13px system-ui";
-  ctx.fillText("AUDIT SEVERITY DISTRIBUTION", 606, 104);
+  ctx.font = "bold 16px system-ui";
+  ctx.fillText("AUDIT SEVERITY DISTRIBUTION", 802, 134);
 
   const categories = [
     { label: "Broken Links (404)", val: 14, color: "#f38ba8" },
@@ -386,30 +383,30 @@ function drawAuditScreen2070(
   ];
 
   categories.forEach((cat, idx) => {
-    const cy = 138 + idx * 56;
+    const cy = 180 + idx * 72;
     ctx.fillStyle = "#cdd6f4";
-    ctx.font = "12px system-ui";
-    ctx.fillText(cat.label, 606, cy);
+    ctx.font = "bold 15px system-ui";
+    ctx.fillText(cat.label, 802, cy);
 
-    const barW = w - 690;
-    ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
-    roundRect(ctx, 606, cy + 10, barW, 14, 5);
+    const barW = w - 920;
+    ctx.fillStyle = "rgba(255, 255, 255, 0.06)";
+    roundRect(ctx, 802, cy + 12, barW, 18, 6);
     ctx.fill();
 
-    const fillW = Math.max(12, (cat.val / 50) * barW * (0.9 + 0.1 * Math.sin(time * 2 + idx)));
+    const fillW = Math.max(16, (cat.val / 50) * barW * (0.9 + 0.1 * Math.sin(time * 2 + idx)));
 
     ctx.save();
-    ctx.shadowBlur = 12;
+    ctx.shadowBlur = 14;
     ctx.shadowColor = cat.color;
     ctx.fillStyle = cat.color;
-    roundRect(ctx, 606, cy + 10, fillW, 14, 5);
+    roundRect(ctx, 802, cy + 12, fillW, 18, 6);
     ctx.fill();
     ctx.restore();
 
     ctx.fillStyle = cat.color;
-    ctx.font = "bold 12px monospace";
+    ctx.font = "900 16px monospace";
     ctx.textAlign = "right";
-    ctx.fillText(String(cat.val), w - 46, cy + 22);
+    ctx.fillText(String(cat.val), w - 58, cy + 28);
     ctx.textAlign = "left";
   });
 }
@@ -421,8 +418,7 @@ function drawCrmScreen2070(
   time: number,
   accent: string,
 ) {
-  /* Pipeline Header Summary */
-  drawGlassPanel(ctx, 30, 70, w - 60, 60, accent, 10);
+  drawGlassPanel(ctx, 40, 90, w - 80, 80, accent, 12);
   const metrics = [
     { label: "TOTAL PIPELINE VALUE", val: "$482,000" },
     { label: "AGENCY REVENUE", val: "$194,500/mo" },
@@ -430,16 +426,15 @@ function drawCrmScreen2070(
     { label: "ACTIVE CLIENT CRMs", val: "32 PORTALS" },
   ];
   metrics.forEach((m, i) => {
-    const mx = 56 + i * 280;
-    ctx.fillStyle = "#6c7086";
-    ctx.font = "10px system-ui";
-    ctx.fillText(m.label, mx, 94);
+    const mx = 72 + i * 370;
+    ctx.fillStyle = "#a6adc8";
+    ctx.font = "bold 12px system-ui";
+    ctx.fillText(m.label, mx, 122);
     ctx.fillStyle = i === 1 ? "#a6e3a1" : "#ffffff";
-    ctx.font = "900 18px system-ui";
-    ctx.fillText(m.val, mx, 116);
+    ctx.font = "900 24px system-ui";
+    ctx.fillText(m.val, mx, 152);
   });
 
-  /* 4 Glass Pipeline Columns */
   const cols = [
     { title: "INBOUND LEADS", val: 8, color: "#89dceb" },
     { title: "AUDIT DELIVERED", val: 5, color: accent },
@@ -447,46 +442,43 @@ function drawCrmScreen2070(
     { title: "CLOSED / WON", val: 12, color: "#a6e3a1" },
   ];
 
-  const colW = (w - 90) / 4;
+  const colW = (w - 130) / 4;
   cols.forEach((col, idx) => {
-    const cx = 30 + idx * (colW + 10);
-    drawGlassPanel(ctx, cx, 142, colW, h - 190, col.color, 10);
+    const cx = 40 + idx * (colW + 14);
+    drawGlassPanel(ctx, cx, 190, colW, h - 250, col.color, 12);
 
-    /* Column Header */
     ctx.fillStyle = col.color;
-    ctx.font = "bold 11px system-ui";
-    ctx.fillText(col.title, cx + 16, 168);
+    ctx.font = "900 15px system-ui";
+    ctx.fillText(col.title, cx + 20, 224);
 
-    /* Deal Cards */
     for (let ci = 0; ci < 3; ci++) {
-      const cy = 186 + ci * 105;
-      ctx.fillStyle = "rgba(22, 24, 40, 0.9)";
-      roundRect(ctx, cx + 10, cy, colW - 20, 92, 8);
+      const cy = 248 + ci * 138;
+      ctx.fillStyle = "rgba(22, 24, 40, 0.95)";
+      roundRect(ctx, cx + 14, cy, colW - 28, 120, 10);
       ctx.fill();
-      ctx.strokeStyle = col.color + "30";
-      ctx.lineWidth = 1;
-      roundRect(ctx, cx + 10, cy, colW - 20, 92, 8);
+      ctx.strokeStyle = col.color + "40";
+      ctx.lineWidth = 1.5;
+      roundRect(ctx, cx + 14, cy, colW - 28, 120, 10);
       ctx.stroke();
 
       ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 13px system-ui";
-      ctx.fillText(`Enterprise Client #${idx * 3 + ci + 101}`, cx + 22, cy + 26);
+      ctx.font = "bold 16px system-ui";
+      ctx.fillText(`Enterprise Client #${idx * 3 + ci + 101}`, cx + 28, cy + 34);
 
-      ctx.fillStyle = "#6c7086";
-      ctx.font = "11px monospace";
-      ctx.fillText(`MRR: $${(idx + 1) * 3500}/mo`, cx + 22, cy + 48);
+      ctx.fillStyle = "#a6adc8";
+      ctx.font = "14px monospace";
+      ctx.fillText(`MRR: $${(idx + 1) * 3500}/mo`, cx + 28, cy + 62);
 
-      /* Holographic Confidence Bar */
       const conf = 0.5 + Math.sin(time + idx + ci) * 0.3 + 0.2;
-      ctx.fillStyle = "rgba(255,255,255,0.06)";
-      roundRect(ctx, cx + 22, cy + 64, colW - 64, 6, 3);
+      ctx.fillStyle = "rgba(255,255,255,0.08)";
+      roundRect(ctx, cx + 28, cy + 82, colW - 84, 8, 4);
       ctx.fill();
 
       ctx.save();
-      ctx.shadowBlur = 8;
+      ctx.shadowBlur = 10;
       ctx.shadowColor = col.color;
       ctx.fillStyle = col.color;
-      roundRect(ctx, cx + 22, cy + 64, (colW - 64) * conf, 6, 3);
+      roundRect(ctx, cx + 28, cy + 82, (colW - 84) * conf, 8, 4);
       ctx.fill();
       ctx.restore();
     }
@@ -500,56 +492,54 @@ function drawSocialScreen2070(
   time: number,
   accent: string,
 ) {
-  drawGlassPanel(ctx, 30, 70, w - 60, h - 118, accent, 12);
+  drawGlassPanel(ctx, 40, 90, w - 80, h - 150, accent, 14);
 
   ctx.fillStyle = accent;
-  ctx.font = "bold 14px system-ui";
-  ctx.fillText("HOLOGRAPHIC CLIENT APPROVAL LOOK-AHEAD CALENDAR", 56, 104);
+  ctx.font = "bold 18px system-ui";
+  ctx.fillText("HOLOGRAPHIC CLIENT APPROVAL LOOK-AHEAD CALENDAR", 72, 134);
 
   const days = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];
-  const colW = (w - 110) / 5;
+  const colW = (w - 150) / 5;
 
   days.forEach((day, i) => {
-    const dx = 50 + i * (colW + 10);
+    const dx = 65 + i * (colW + 14);
 
-    ctx.fillStyle = "rgba(15, 17, 30, 0.8)";
-    roundRect(ctx, dx, 125, colW, h - 200, 8);
+    ctx.fillStyle = "rgba(15, 17, 30, 0.88)";
+    roundRect(ctx, dx, 160, colW, h - 250, 10);
     ctx.fill();
 
     ctx.fillStyle = "#89dceb";
-    ctx.font = "bold 12px system-ui";
-    ctx.fillText(day, dx + 14, 150);
+    ctx.font = "900 15px system-ui";
+    ctx.fillText(day, dx + 18, 192);
 
-    /* Post Preview Cards */
     for (let pi = 0; pi < 2; pi++) {
-      const py = 170 + pi * 190;
-      ctx.fillStyle = "rgba(26, 28, 48, 0.9)";
-      roundRect(ctx, dx + 8, py, colW - 16, 170, 8);
+      const py = 216 + pi * 240;
+      ctx.fillStyle = "rgba(26, 28, 48, 0.95)";
+      roundRect(ctx, dx + 12, py, colW - 24, 218, 10);
       ctx.fill();
 
       const needsRevision = i === 3 && pi === 0;
       const statusColor = needsRevision ? "#f38ba8" : "#a6e3a1";
       const statusLabel = needsRevision ? "REVISION REQ" : "APPROVED";
 
-      ctx.fillStyle = statusColor + "20";
-      roundRect(ctx, dx + 16, py + 12, colW - 48, 22, 4);
+      ctx.fillStyle = statusColor + "25";
+      roundRect(ctx, dx + 20, py + 16, colW - 64, 28, 6);
       ctx.fill();
       ctx.fillStyle = statusColor;
-      ctx.font = "bold 10px system-ui";
-      ctx.fillText(statusLabel, dx + 24, py + 27);
+      ctx.font = "900 12px system-ui";
+      ctx.fillText(statusLabel, dx + 30, py + 35);
 
       ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 12px system-ui";
-      ctx.fillText(`OmniPost #${i * 2 + pi + 1}`, dx + 16, py + 60);
+      ctx.font = "bold 15px system-ui";
+      ctx.fillText(`OmniPost #${i * 2 + pi + 1}`, dx + 20, py + 78);
 
       ctx.fillStyle = "#a6adc8";
-      ctx.font = "11px system-ui";
-      ctx.fillText("Organic SEO & Social", dx + 16, py + 82);
+      ctx.font = "13px system-ui";
+      ctx.fillText("Organic SEO & Social", dx + 20, py + 104);
 
-      /* Predictive Reach Metric */
-      ctx.fillStyle = "#6c7086";
-      ctx.font = "10px monospace";
-      ctx.fillText("ESTIMATED REACH: 45.2K", dx + 16, py + 115);
+      ctx.fillStyle = "#a6adc8";
+      ctx.font = "bold 12px monospace";
+      ctx.fillText("ESTIMATED REACH: 45.2K", dx + 20, py + 148);
     }
   });
 }
@@ -561,23 +551,20 @@ function drawPortalScreen2070(
   time: number,
   accent: string,
 ) {
-  /* Main Organic Chart Glass Panel */
-  drawGlassPanel(ctx, 30, 70, 720, h - 118, accent, 12);
+  drawGlassPanel(ctx, 40, 90, 960, h - 150, accent, 14);
 
   ctx.fillStyle = accent;
-  ctx.font = "bold 14px system-ui";
-  ctx.fillText("24/7 WHITE-LABEL LIVE ORGANIC GROWTH ENGINE", 56, 104);
+  ctx.font = "bold 18px system-ui";
+  ctx.fillText("24/7 WHITE-LABEL LIVE ORGANIC GROWTH ENGINE", 72, 134);
 
-  /* Spline Chart Area */
-  const chartL = 80;
-  const chartR = 710;
-  const chartT = 140;
-  const chartB = h - 120;
+  const chartL = 100;
+  const chartR = 940;
+  const chartT = 180;
+  const chartB = h - 150;
   const chartH = chartB - chartT;
 
-  /* Horizontal Grid Lines */
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
-  ctx.lineWidth = 1;
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.06)";
+  ctx.lineWidth = 1.5;
   for (let i = 0; i <= 4; i++) {
     const gy = chartT + (i / 4) * chartH;
     ctx.beginPath();
@@ -585,12 +572,11 @@ function drawPortalScreen2070(
     ctx.lineTo(chartR, gy);
     ctx.stroke();
 
-    ctx.fillStyle = "#6c7086";
-    ctx.font = "10px monospace";
-    ctx.fillText(`${(4 - i) * 25}k`, chartL - 32, gy + 4);
+    ctx.fillStyle = "#a6adc8";
+    ctx.font = "bold 12px monospace";
+    ctx.fillText(`${(4 - i) * 25}k`, chartL - 42, gy + 4);
   }
 
-  /* Spline Curve Points */
   const points: [number, number][] = [];
   for (let i = 0; i <= 12; i++) {
     const px = chartL + (i / 12) * (chartR - chartL);
@@ -600,7 +586,6 @@ function drawPortalScreen2070(
     points.push([px, py]);
   }
 
-  /* Gradient Fill under organic curve */
   ctx.beginPath();
   ctx.moveTo(points[0]![0], chartB);
   points.forEach(([px, py]) => ctx.lineTo(px, py));
@@ -608,15 +593,14 @@ function drawPortalScreen2070(
   ctx.closePath();
 
   const areaGrad = ctx.createLinearGradient(0, chartT, 0, chartB);
-  areaGrad.addColorStop(0, accent + "50");
-  areaGrad.addColorStop(0.7, accent + "10");
+  areaGrad.addColorStop(0, accent + "60");
+  areaGrad.addColorStop(0.7, accent + "15");
   areaGrad.addColorStop(1, accent + "00");
   ctx.fillStyle = areaGrad;
   ctx.fill();
 
-  /* Glowing Spline Path */
   ctx.save();
-  ctx.shadowBlur = 20;
+  ctx.shadowBlur = 24;
   ctx.shadowColor = accent;
   ctx.beginPath();
   ctx.moveTo(points[0]![0], points[0]![1]);
@@ -627,54 +611,52 @@ function drawPortalScreen2070(
     ctx.bezierCurveTo(cpx, prev[1], cpx, curr[1], curr[0], curr[1]);
   }
   ctx.strokeStyle = accent;
-  ctx.lineWidth = 3.5;
+  ctx.lineWidth = 4.5;
   ctx.stroke();
   ctx.restore();
 
-  /* Right Panel — Real-Time KPI Cards */
-  drawGlassPanel(ctx, 770, 70, w - 800, 240, accent, 12);
+  /* Right Panel — KPI Cards */
+  drawGlassPanel(ctx, 1030, 90, w - 1070, 310, accent, 14);
 
   ctx.fillStyle = "#ffffff";
-  ctx.font = "bold 13px system-ui";
-  ctx.fillText("GOOGLE MAPS CALLS", 796, 104);
+  ctx.font = "bold 16px system-ui";
+  ctx.fillText("GOOGLE MAPS CALLS", 1062, 134);
 
   ctx.save();
-  ctx.shadowBlur = 35;
+  ctx.shadowBlur = 40;
   ctx.shadowColor = "#a6e3a1";
   ctx.fillStyle = "#a6e3a1";
-  ctx.font = "900 52px system-ui";
-  ctx.fillText("+142%", 796, 185);
+  ctx.font = "900 68px system-ui";
+  ctx.fillText("+142%", 1062, 235);
   ctx.restore();
 
   ctx.fillStyle = "#a6e3a1";
-  ctx.font = "bold 12px system-ui";
-  ctx.fillText("▲ VERIFIED ORGANIC LEADS", 796, 218);
+  ctx.font = "900 15px system-ui";
+  ctx.fillText("▲ VERIFIED ORGANIC LEADS", 1062, 278);
 
-  /* Bottom Right Panel — Tasks Completed Gauge */
-  drawGlassPanel(ctx, 770, 330, w - 800, h - 378, accent, 12);
+  drawGlassPanel(ctx, 1030, 430, w - 1070, h - 490, accent, 14);
 
   ctx.fillStyle = "#ffffff";
-  ctx.font = "bold 13px system-ui";
-  ctx.fillText("TASKS COMPLETED", 796, 364);
+  ctx.font = "bold 16px system-ui";
+  ctx.fillText("TASKS COMPLETED", 1062, 474);
 
   ctx.save();
-  ctx.shadowBlur = 30;
+  ctx.shadowBlur = 36;
   ctx.shadowColor = "#fab387";
   ctx.fillStyle = "#fab387";
-  ctx.font = "900 48px system-ui";
-  ctx.fillText("28 / 30", 796, 435);
+  ctx.font = "900 60px system-ui";
+  ctx.fillText("28 / 30", 1062, 565);
   ctx.restore();
 
-  /* Progress Bar */
-  ctx.fillStyle = "rgba(255,255,255,0.06)";
-  roundRect(ctx, 796, 460, w - 852, 14, 7);
+  ctx.fillStyle = "rgba(255,255,255,0.08)";
+  roundRect(ctx, 1062, 595, w - 1140, 18, 9);
   ctx.fill();
 
   ctx.save();
-  ctx.shadowBlur = 12;
+  ctx.shadowBlur = 16;
   ctx.shadowColor = "#fab387";
   ctx.fillStyle = "#fab387";
-  roundRect(ctx, 796, 460, (w - 852) * 0.933, 14, 7);
+  roundRect(ctx, 1062, 595, (w - 1140) * 0.933, 18, 9);
   ctx.fill();
   ctx.restore();
 }
@@ -686,19 +668,18 @@ function drawAutomationsScreen2070(
   time: number,
   accent: string,
 ) {
-  drawGlassPanel(ctx, 30, 70, w - 60, h - 118, accent, 12);
+  drawGlassPanel(ctx, 40, 90, w - 80, h - 150, accent, 14);
 
   ctx.fillStyle = accent;
-  ctx.font = "bold 14px system-ui";
-  ctx.fillText("QUANTUM WORKFLOW & TRIGGER AUTOMATION GRAPH", 56, 104);
+  ctx.font = "bold 18px system-ui";
+  ctx.fillText("QUANTUM WORKFLOW & TRIGGER AUTOMATION GRAPH", 72, 134);
 
-  /* 5 Node Topology */
   const nodes = [
-    { label: "Trigger: Webhook", type: "ENTRY", x: 70, y: 310, color: "#89dceb" },
-    { label: "Condition: Audit OK", type: "EVAL", x: 340, y: 310, color: "#cba6f7" },
-    { label: "Action: Send SMS", type: "EXEC", x: 620, y: 190, color: "#a6e3a1" },
-    { label: "Action: Create CRM Deal", type: "EXEC", x: 620, y: 430, color: "#fab387" },
-    { label: "Notify Ops Channel", type: "EXEC", x: 900, y: 310, color: "#f38ba8" },
+    { label: "Trigger: Webhook", type: "ENTRY", x: 90, y: 410, color: "#89dceb" },
+    { label: "Condition: Audit OK", type: "EVAL", x: 440, y: 410, color: "#cba6f7" },
+    { label: "Action: Send SMS", type: "EXEC", x: 800, y: 250, color: "#a6e3a1" },
+    { label: "Action: Create CRM Deal", type: "EXEC", x: 800, y: 570, color: "#fab387" },
+    { label: "Notify Ops Channel", type: "EXEC", x: 1180, y: 410, color: "#f38ba8" },
   ];
 
   const connections: [number, number][] = [
@@ -709,11 +690,10 @@ function drawAutomationsScreen2070(
     [3, 4],
   ];
 
-  /* Draw glowing energy conduits */
   connections.forEach(([from, to]) => {
     const fn = nodes[from]!;
     const tn = nodes[to]!;
-    const sx = fn.x + 200;
+    const sx = fn.x + 260;
     const sy = fn.y;
     const ex = tn.x;
     const ey = tn.y;
@@ -723,11 +703,10 @@ function drawAutomationsScreen2070(
     ctx.beginPath();
     ctx.moveTo(sx, sy);
     ctx.bezierCurveTo(cpx1, sy, cpx2, ey, ex, ey);
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+    ctx.lineWidth = 4;
     ctx.stroke();
 
-    /* Animated energy particle pulse */
     const pulseT = ((time * 0.8 + from * 0.5) % 1.5) / 1.5;
     const invT = 1 - pulseT;
     const px =
@@ -742,54 +721,54 @@ function drawAutomationsScreen2070(
       pulseT * pulseT * pulseT * ey;
 
     ctx.save();
-    ctx.shadowBlur = 16;
+    ctx.shadowBlur = 20;
     ctx.shadowColor = fn.color;
     ctx.fillStyle = fn.color;
     ctx.beginPath();
-    ctx.arc(px, py, 5, 0, Math.PI * 2);
+    ctx.arc(px, py, 7, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   });
 
-  /* Render 3D Glass Node Cards */
   nodes.forEach((n) => {
     ctx.save();
-    ctx.shadowBlur = 20;
-    ctx.shadowColor = n.color + "40";
-    ctx.fillStyle = "rgba(16, 18, 32, 0.95)";
-    roundRect(ctx, n.x, n.y - 45, 200, 90, 10);
+    ctx.shadowBlur = 24;
+    ctx.shadowColor = n.color + "50";
+    ctx.fillStyle = "rgba(16, 18, 32, 0.96)";
+    roundRect(ctx, n.x, n.y - 60, 260, 120, 14);
     ctx.fill();
     ctx.restore();
 
-    ctx.strokeStyle = n.color + "80";
-    ctx.lineWidth = 2;
-    roundRect(ctx, n.x, n.y - 45, 200, 90, 10);
+    ctx.strokeStyle = n.color + "90";
+    ctx.lineWidth = 2.5;
+    roundRect(ctx, n.x, n.y - 60, 260, 120, 14);
     ctx.stroke();
 
-    ctx.fillStyle = n.color + "25";
-    roundRect(ctx, n.x + 14, n.y - 32, 64, 20, 4);
+    ctx.fillStyle = n.color + "30";
+    roundRect(ctx, n.x + 18, n.y - 42, 80, 26, 6);
     ctx.fill();
     ctx.fillStyle = n.color;
-    ctx.font = "bold 9px system-ui";
-    ctx.fillText(n.type, n.x + 22, n.y - 18);
+    ctx.font = "900 12px system-ui";
+    ctx.fillText(n.type, n.x + 28, n.y - 24);
 
     ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 13px system-ui";
-    ctx.fillText(n.label, n.x + 14, n.y + 16);
+    ctx.font = "900 16px system-ui";
+    ctx.fillText(n.label, n.x + 18, n.y + 22);
   });
 }
 
-/* ───────────────────── Canvas Screen Texture Hook ───────────────────── */
+/* ───────────────────── Canvas Screen Texture Hook (1600x1000 anisotropic 16) ───────────────────── */
 
 function use2070ScreenTexture(stationId: string, accentHex: string) {
   const { canvas, texture } = useMemo(() => {
     if (typeof document === "undefined") return { canvas: null, texture: null };
     const canvas = document.createElement("canvas");
-    canvas.width = 1200;
-    canvas.height = 750;
+    canvas.width = 1600;
+    canvas.height = 1000;
     const tex = new THREE.CanvasTexture(canvas);
     tex.minFilter = THREE.LinearFilter;
     tex.magFilter = THREE.LinearFilter;
+    tex.anisotropy = 16;
     tex.colorSpace = THREE.SRGBColorSpace;
     return { canvas, texture: tex };
   }, []);
@@ -815,7 +794,7 @@ function use2070ScreenTexture(stationId: string, accentHex: string) {
   return { texture, drawScreen };
 }
 
-/* ───────────────────── 2070 Moonlander Glass Console ───────────────────── */
+/* ───────────────────── Sleek Razor-Thin Holographic Slate ───────────────────── */
 
 function Moonlander2070Console({
   position,
@@ -839,108 +818,76 @@ function Moonlander2070Console({
     if (!g) return;
     const t = state.clock.elapsedTime;
     g.position.y = position[1] + Math.sin(t * 0.8 + position[0]) * 0.03;
-    const targetScale = 0.94 + active * 0.16;
+    const targetScale = 0.95 + active * 0.14;
     g.scale.setScalar(THREE.MathUtils.lerp(g.scale.x, targetScale, 0.07));
   });
 
   return (
-    <Float speed={0.9} rotationIntensity={0.06} floatIntensity={0.15}>
+    <Float speed={0.9} rotationIntensity={0.05} floatIntensity={0.12}>
       <group ref={group} position={position} rotation={rotation}>
-        {/* ── Moonlander Left Ergonomic Glass Wing Base ── */}
-        <group position={[-0.9, -1.0, 0.1]} rotation={[0.1, 0.22, -0.05]}>
-          <mesh>
-            <boxGeometry args={[1.7, 0.22, 1.2]} />
-            <meshPhysicalMaterial
-              color="#0e101d"
-              transmission={0.82}
-              roughness={0.12}
-              ior={1.52}
-              thickness={0.8}
-              clearcoat={1.0}
-              clearcoatRoughness={0.04}
-              emissive={color}
-              emissiveIntensity={0.12 + active * 0.2}
-            />
-          </mesh>
-          {/* Tactile Skeuomorphic Glass Keys Matrix */}
-          {[-0.5, -0.25, 0, 0.25, 0.5].map((kx, idx) => (
-            <mesh key={`lkey-${idx}`} position={[kx, 0.15, -0.1]}>
-              <boxGeometry args={[0.18, 0.08, 0.18]} />
-              <meshPhysicalMaterial
-                color={color}
-                emissive={color}
-                emissiveIntensity={0.4 + active * 0.8}
-                roughness={0.1}
-                clearcoat={0.9}
-              />
-            </mesh>
-          ))}
-        </group>
-
-        {/* ── Moonlander Right Ergonomic Glass Wing Base ── */}
-        <group position={[0.9, -1.0, 0.1]} rotation={[0.1, -0.22, 0.05]}>
-          <mesh>
-            <boxGeometry args={[1.7, 0.22, 1.2]} />
-            <meshPhysicalMaterial
-              color="#0e101d"
-              transmission={0.82}
-              roughness={0.12}
-              ior={1.52}
-              thickness={0.8}
-              clearcoat={1.0}
-              clearcoatRoughness={0.04}
-              emissive={color}
-              emissiveIntensity={0.12 + active * 0.2}
-            />
-          </mesh>
-          {/* Tactile Skeuomorphic Glass Keys Matrix */}
-          {[-0.5, -0.25, 0, 0.25, 0.5].map((kx, idx) => (
-            <mesh key={`rkey-${idx}`} position={[kx, 0.15, -0.1]}>
-              <boxGeometry args={[0.18, 0.08, 0.18]} />
-              <meshPhysicalMaterial
-                color={color}
-                emissive={color}
-                emissiveIntensity={0.4 + active * 0.8}
-                roughness={0.1}
-                clearcoat={0.9}
-              />
-            </mesh>
-          ))}
-        </group>
-
-        {/* ── Holographic Visor Chamfered Glass Frame ── */}
-        <mesh position={[0, 0.48, -0.02]} rotation={[-0.08, 0, 0]}>
-          <boxGeometry args={[3.6, 2.25, 0.08]} />
+        {/* ── Ultra-Sleek Razor-Thin Floating Glass Base Tray ── */}
+        <mesh position={[0, -0.92, 0]} rotation={[0.08, 0, 0]}>
+          <boxGeometry args={[3.2, 0.03, 0.7]} />
           <meshPhysicalMaterial
-            color="#080912"
-            transmission={0.92}
+            color="#090a14"
+            transmission={0.9}
             roughness={0.08}
-            ior={1.55}
-            thickness={0.6}
+            ior={1.52}
+            thickness={0.2}
             clearcoat={1.0}
             clearcoatRoughness={0.02}
             emissive={color}
-            emissiveIntensity={0.06 + active * 0.15}
+            emissiveIntensity={0.15 + active * 0.25}
           />
         </mesh>
 
-        {/* ── 2070 HUD Canvas Display Surface ── */}
-        <mesh position={[0, 0.48, 0.03]} rotation={[-0.08, 0, 0]}>
-          <planeGeometry args={[3.45, 2.1]} />
+        {/* ── Micro LED Status Indicators on Base Tray ── */}
+        {[-1.2, -0.6, 0, 0.6, 1.2].map((kx, idx) => (
+          <mesh key={`led-${idx}`} position={[kx, -0.89, 0.15]}>
+            <cylinderGeometry args={[0.025, 0.025, 0.02, 16]} />
+            <meshPhysicalMaterial
+              color={color}
+              emissive={color}
+              emissiveIntensity={0.6 + active * 0.8}
+              roughness={0.1}
+              clearcoat={1.0}
+            />
+          </mesh>
+        ))}
+
+        {/* ── Razor-Thin Chamfered Glass Slate Backing (Thickness = 0.015) ── */}
+        <mesh position={[0, 0.48, -0.01]} rotation={[-0.08, 0, 0]}>
+          <boxGeometry args={[3.54, 2.19, 0.015]} />
+          <meshPhysicalMaterial
+            color="#060710"
+            transmission={0.95}
+            roughness={0.04}
+            ior={1.55}
+            thickness={0.15}
+            clearcoat={1.0}
+            clearcoatRoughness={0.01}
+            emissive={color}
+            emissiveIntensity={0.05 + active * 0.12}
+          />
+        </mesh>
+
+        {/* ── 2070 HUD Ultra-Crisp Display Surface ── */}
+        <mesh position={[0, 0.48, 0.01]} rotation={[-0.08, 0, 0]}>
+          <planeGeometry args={[3.5, 2.15]} />
           {texture ? (
             <meshBasicMaterial map={texture} toneMapped={false} />
           ) : (
-            <meshBasicMaterial color="#040409" />
+            <meshBasicMaterial color="#030307" />
           )}
         </mesh>
 
-        {/* ── Outer Protective Optical Glass Visor ── */}
-        <mesh position={[0, 0.48, 0.05]} rotation={[-0.08, 0, 0]}>
-          <planeGeometry args={[3.45, 2.1]} />
+        {/* ── Outer Protective Optical Anti-Reflective Layer ── */}
+        <mesh position={[0, 0.48, 0.02]} rotation={[-0.08, 0, 0]}>
+          <planeGeometry args={[3.5, 2.15]} />
           <meshPhysicalMaterial
             transparent
-            opacity={0.05}
-            roughness={0.02}
+            opacity={0.03}
+            roughness={0.01}
             clearcoat={1.0}
             clearcoatRoughness={0.01}
             color="#ffffff"
@@ -948,25 +895,25 @@ function Moonlander2070Console({
           />
         </mesh>
 
-        {/* ── Laser Light Pipe Rim Glow ── */}
-        <mesh position={[0, 0.48, -0.04]} rotation={[-0.08, 0, 0]}>
-          <boxGeometry args={[3.66, 2.31, 0.02]} />
+        {/* ── Laser Edge Trace Accent Rim ── */}
+        <mesh position={[0, 0.48, -0.02]} rotation={[-0.08, 0, 0]}>
+          <boxGeometry args={[3.56, 2.21, 0.008]} />
           <meshStandardMaterial
             color={color}
             emissive={color}
-            emissiveIntensity={0.8 + active * 1.4}
+            emissiveIntensity={0.9 + active * 1.5}
             transparent
-            opacity={0.7}
+            opacity={0.75}
           />
         </mesh>
 
-        {/* ── Floating Concentric Laser Base Projection Ring ── */}
-        <mesh position={[0, -1.25, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[1.2, 1.35, 64]} />
+        {/* ── Laser Projection Base Ring ── */}
+        <mesh position={[0, -1.1, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[1.1, 1.22, 64]} />
           <meshStandardMaterial
             color={color}
             emissive={color}
-            emissiveIntensity={0.6 + active * 1.0}
+            emissiveIntensity={0.7 + active * 1.0}
             side={THREE.DoubleSide}
             transparent
             opacity={0.5}
@@ -981,18 +928,18 @@ function Moonlander2070Console({
 
 function MCRFloor() {
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.4, 0]}>
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.2, 0]}>
       <planeGeometry args={[60, 60]} />
       <MeshReflectorMaterial
         blur={[400, 200]}
         resolution={512}
         mixBlur={1}
         mixStrength={18}
-        roughness={0.7}
+        roughness={0.75}
         depthScale={1.2}
         minDepthThreshold={0.4}
         maxDepthThreshold={1.4}
-        color="#080912"
+        color="#060710"
         metalness={0.8}
         mirror={0.5}
       />
@@ -1000,7 +947,7 @@ function MCRFloor() {
   );
 }
 
-/* ───────────────────── Camera Rig ───────────────────── */
+/* ───────────────────── Camera Rig (Sharp Framing) ───────────────────── */
 
 function CameraRig({ progress }: { progress: ProgressRef }) {
   const { camera } = useThree();
@@ -1021,7 +968,7 @@ function CameraRig({ progress }: { progress: ProgressRef }) {
 
     const currentSideOffset = Math.round(p * (n - 1)) % 2 === 0 ? -1.1 : 1.1;
     const x = Math.sin(p * Math.PI * 1.8) * 1.5;
-    const y = 0.75 + Math.cos(p * Math.PI * 2) * 0.12;
+    const y = 0.72 + Math.cos(p * Math.PI * 2) * 0.1;
 
     camera.position.set(x, y, z + 4.8);
     camera.lookAt(currentSideOffset * 0.35, 0.48, z);
@@ -1043,7 +990,7 @@ function Scene({ progress }: { progress: ProgressRef }) {
       <color attach="background" args={[C.crust]} />
       <fog attach="fog" args={[C.crust, 8, 32]} />
 
-      <ambientLight intensity={0.4} />
+      <ambientLight intensity={0.45} />
       <directionalLight position={[8, 14, 6]} intensity={1.2} color="#ffffff" />
       <pointLight position={[-6, 5, 4]} intensity={0.8} color={C.sky} />
       <pointLight position={[6, 4, 18]} intensity={0.7} color={C.flamingo} />
@@ -1080,21 +1027,17 @@ function Scene({ progress }: { progress: ProgressRef }) {
 
       <CameraRig progress={progress} />
 
+      {/* Pin-Sharp Post-Processing (Bloom + Chromatic Aberration + Vignette, no blur) */}
       <EffectComposer>
-        <DepthOfField
-          focusDistance={0.08}
-          focalLength={0.05}
-          bokehScale={2.5}
-        />
         <Bloom
-          luminanceThreshold={0.55}
-          luminanceSmoothing={0.35}
-          intensity={0.8}
+          luminanceThreshold={0.6}
+          luminanceSmoothing={0.4}
+          intensity={0.6}
         />
         <ChromaticAberration
-          offset={new THREE.Vector2(0.0008, 0.0008)}
+          offset={new THREE.Vector2(0.0006, 0.0006)}
         />
-        <Vignette eskil={false} offset={0.15} darkness={0.5} />
+        <Vignette eskil={false} offset={0.15} darkness={0.45} />
       </EffectComposer>
     </>
   );
@@ -1139,7 +1082,7 @@ export function WorldStage() {
 
   if (reduced) {
     return (
-      <section className="relative bg-[#0b0c16] px-6 py-24">
+      <section className="relative bg-[#070810] px-6 py-24">
         <div className="mx-auto max-w-[48rem] space-y-16">
           {STATIONS.map((s) => (
             <article key={s.id} className="space-y-3">
@@ -1168,7 +1111,7 @@ export function WorldStage() {
     >
       <div
         ref={pinRef}
-        className="relative h-dvh w-full overflow-hidden bg-[#0b0c16]"
+        className="relative h-dvh w-full overflow-hidden bg-[#070810]"
       >
         <Canvas
           className="absolute inset-0"
