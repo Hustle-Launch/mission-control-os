@@ -487,8 +487,8 @@ function Landing() {
                 { name: "Pro", price: "$149", note: "per month", featured: true },
                 { name: "Enterprise", price: "Talk", note: "to us" },
               ].map((p) => (
-                <div key={p.name} className={`min-w-0 rounded-2xl border p-4 text-center ${p.featured ? "border-zinc-900 bg-zinc-900 text-white shadow-lg dark:border-white dark:bg-white dark:text-zinc-900" : "border-black/10 bg-white dark:border-white/10 dark:bg-zinc-800"}`}>
-                  <p className={`text-xs font-semibold uppercase tracking-widest ${p.featured ? "text-zinc-400 dark:text-zinc-500" : "text-zinc-500 dark:text-zinc-400"}`}>{p.name}</p>
+                <div key={p.name} className={`flex min-w-0 flex-col items-center justify-center overflow-hidden rounded-2xl border px-3 py-4 text-center sm:p-4 ${p.featured ? "border-zinc-900 bg-zinc-900 text-white shadow-lg dark:border-white dark:bg-white dark:text-zinc-900" : "border-black/10 bg-white dark:border-white/10 dark:bg-zinc-800"}`}>
+                  <p className={`w-full truncate px-1 text-[10px] font-semibold uppercase tracking-[0.14em] sm:text-[11px] sm:tracking-[0.16em] ${p.featured ? "text-zinc-400 dark:text-zinc-500" : "text-zinc-500 dark:text-zinc-400"}`}>{p.name}</p>
                   <p className="mt-2 text-xl font-semibold tracking-tight">{p.price}</p>
                   <p className={`text-xs ${p.featured ? "text-zinc-400 dark:text-zinc-500" : "text-zinc-500 dark:text-zinc-400"}`}>{p.note}</p>
                 </div>
