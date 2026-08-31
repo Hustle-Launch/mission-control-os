@@ -16,8 +16,13 @@ import {
   LayoutGrid,
   Command,
   ChevronRight,
+  ChevronLeft,
+  Activity,
+  Terminal,
+  Smartphone,
+  Monitor,
 } from "lucide-react";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 
 const WorldStage = lazy(() =>
   import("@/components/landing/world-stage").then((m) => ({ default: m.WorldStage })),
@@ -35,27 +40,87 @@ function FlightPlaceholder() {
   );
 }
 
-function Pill({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline-flex max-w-full flex-wrap items-center justify-center gap-1.5 rounded-full border border-black/[0.08] bg-white px-3 py-1.5 text-[11px] font-medium leading-tight tracking-wide text-zinc-600 shadow-sm sm:gap-2 sm:px-3 sm:py-1 dark:border-white/10 dark:bg-zinc-900 dark:text-zinc-400">
-      {children}
-    </span>
-  );
-}
-
 function SectionEyebrow({ children }: { children: React.ReactNode }) {
   return (
     <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-zinc-400">{children}</p>
   );
 }
 
+const TESTIMONIALS = [
+  { q: "Finally a crawler we own. The portal alone killed our PDF busywork.", a: "Agency Owner", meta: "32 locations" },
+  { q: "The dual CRM is the unlock — same tool for us and clients, no sync hell.", a: "Ops Lead", meta: "Multi-tenant" },
+  { q: "TUI + ⌘K. I live in there. Feels like Raycast for local SEO.", a: "Technical SEO", meta: "Power user" },
+  { q: "Flat pricing saved us $2k/mo vs. the old stack. And we kept the data.", a: "Founder", meta: "12 clients" },
+  { q: "Client approvals in the N-week window — no more Slack chase.", a: "Account Manager", meta: "Social · 40 posts/wk" },
+];
+
+function TestimonialCarousel() {
+  const [idx, setIdx] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const timer = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (paused) return;
+    timer.current = window.setInterval(() => setIdx((i) => (i + 1) % TESTIMONIALS.length), 3800);
+    return () => {
+      if (timer.current) window.clearInterval(timer.current);
+    };
+  }, [paused, idx]);
+
+  return (
+    <div className="relative mt-8" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+      <div className="overflow-hidden rounded-[16px] sm:rounded-[20px]">
+        <div className="flex transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]" style={{ transform: `translateX(-${idx * 100}%)` }}>
+          {TESTIMONIALS.map((t) => (
+            <div key={t.q} className="w-full shrink-0 px-1 sm:px-2">
+              <div className="mx-auto max-w-[640px] rounded-2xl border border-black/5 bg-white p-5 shadow-sm sm:p-6 dark:border-white/5 dark:bg-zinc-900">
+                <p className="text-center text-[15px] font-medium leading-6 text-zinc-700 sm:text-base dark:text-zinc-200">“{t.q}”</p>
+                <p className="mt-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400">— {t.a} · {t.meta}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* peek cards on desktop: show 3 at once via overflow, but carousel shows 1 centered — add dots + arrows */}
+      <div className="mt-4 flex items-center justify-center gap-3">
+        <button
+          aria-label="Previous"
+          onClick={() => setIdx((i) => (i - 1 + TESTIMONIALS.length) % TESTIMONIALS.length)}
+          className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-black/10 bg-white text-zinc-600 shadow-sm hover:bg-zinc-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+        <div className="flex items-center gap-1.5">
+          {TESTIMONIALS.map((_, i) => (
+            <button
+              key={i}
+              aria-label={`Go to ${i + 1}`}
+              onClick={() => setIdx(i)}
+              className={`h-1.5 rounded-full transition-all ${i === idx ? "w-6 bg-zinc-900 dark:bg-white" : "w-1.5 bg-zinc-300 dark:bg-zinc-600"}`}
+            />
+          ))}
+        </div>
+        <button
+          aria-label="Next"
+          onClick={() => setIdx((i) => (i + 1) % TESTIMONIALS.length)}
+          className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-black/10 bg-white text-zinc-600 shadow-sm hover:bg-zinc-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
+      </div>
+
+      {/* mobile swipe hint */}
+      <p className="mt-2 text-center text-[11px] text-zinc-400 sm:hidden dark:text-zinc-500">Swipe or tap arrows</p>
+    </div>
+  );
+}
+
 function Landing() {
   return (
     <div className="bg-[#FCFCF9] text-[#0b0b0f] selection:bg-[#89dceb]/30 dark:bg-[#09090b] dark:text-zinc-100">
-      {/* system dark without toggle */}
       <style>{`@media (prefers-color-scheme: dark) { html { color-scheme: dark } }`}</style>
 
-      {/* Header — raycast-like: thin, airy, nav center */}
       <header className="sticky top-0 z-50 border-b border-black/[0.06] bg-[#FCFCF9]/80 backdrop-blur-xl supports-[backdrop-filter]:bg-[#FCFCF9]/70 dark:border-white/10 dark:bg-[#09090b]/80 dark:supports-[backdrop-filter]:bg-[#09090b]/70">
         <div className="mx-auto flex h-[52px] max-w-[1200px] items-center justify-between gap-3 px-4 sm:h-[56px] sm:gap-6 sm:px-6 lg:px-8">
           <Link to="/" className="shrink-0">
@@ -98,7 +163,6 @@ function Landing() {
         </div>
       </header>
 
-      {/* Hero — centered like raycast */}
       <section className="relative overflow-hidden px-4 pb-8 pt-10 sm:px-6 sm:pb-8 sm:pt-14 lg:px-8 lg:pt-20">
         <div className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.04)_1px,transparent_1px)] bg-[size:28px_28px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_70%,transparent_110%)] sm:bg-[size:32px_32px] dark:opacity-30" />
@@ -106,16 +170,7 @@ function Landing() {
         </div>
 
         <div className="mx-auto max-w-[1200px] text-center">
-          <div className="flex justify-center px-2">
-            <Pill>
-              <span className="inline-flex h-2 w-2 shrink-0 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
-              <span className="hidden sm:inline">New: Local Agent + rendered crawl — zero per-page fees</span>
-              <span className="sm:hidden">New: Local Agent · zero per-page fees</span>
-              <span className="hidden items-center gap-1 text-zinc-400 sm:inline-flex">· <a href="#flight" className="underline-offset-2 hover:text-zinc-700 hover:underline dark:hover:text-zinc-300">Take the flight</a></span>
-            </Pill>
-          </div>
-
-          <h1 className="mx-auto mt-6 max-w-[780px] text-[32px] font-[700] leading-[0.95] tracking-[-0.04em] text-[#0b0b0f] sm:mt-8 sm:text-[56px] lg:text-[72px] dark:text-white">
+          <h1 className="mx-auto max-w-[780px] text-[32px] font-[700] leading-[0.95] tracking-[-0.04em] text-[#0b0b0f] sm:text-[56px] lg:text-[72px] dark:text-white">
             Your shortcut to
             <br />
             <span className="bg-gradient-to-r from-[#ff4d4d] via-[#ff8a5b] to-[#0ea5e9] bg-clip-text text-transparent">every client.</span>
@@ -148,7 +203,6 @@ function Landing() {
           </div>
           <p className="mt-3 hidden text-xs text-zinc-400 sm:block dark:text-zinc-500">No credit card. Self Client auto-created on signup.</p>
 
-          {/* Launcher mock — the raycast window */}
           <div className="relative mx-auto mt-8 max-w-[860px] sm:mt-12">
             <div className="relative overflow-hidden rounded-[16px] border border-black/10 bg-white shadow-[0_16px_32px_-12px_rgba(0,0,0,0.16),0_0_0_1px_rgba(0,0,0,0.03)] sm:rounded-[20px] sm:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.18),0_0_0_1px_rgba(0,0,0,0.03)] dark:border-white/10 dark:bg-zinc-900 dark:shadow-[0_24px_64px_rgba(0,0,0,0.45)]">
               <div className="flex items-center gap-1.5 border-b border-black/[0.06] bg-[#fafaf8] px-3 py-2.5 sm:px-4 sm:py-3 dark:border-white/10 dark:bg-zinc-900">
@@ -231,7 +285,6 @@ function Landing() {
         </div>
       </section>
 
-      {/* Trust */}
       <section className="border-y border-black/[0.06] bg-white px-4 py-4 dark:border-white/10 dark:bg-zinc-900 sm:px-6 sm:py-6 lg:px-8">
         <div className="mx-auto flex max-w-[1200px] flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-6">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">Built for agencies who ship</p>
@@ -248,7 +301,6 @@ function Landing() {
         </div>
       </section>
 
-      {/* Bento */}
       <section id="capabilities" className="bg-[#FCFCF9] px-4 py-10 dark:bg-[#09090b] sm:px-6 sm:py-16 lg:px-8 lg:py-20">
         <div className="mx-auto max-w-[1200px]">
           <div className="mx-auto max-w-2xl text-center">
@@ -288,28 +340,26 @@ function Landing() {
         </div>
       </section>
 
-      {/* Speed */}
+      {/* Speed — fixed icon overlap: icon now above title with clear gap */}
       <section className="border-y border-black/[0.06] bg-white px-4 py-8 dark:border-white/10 dark:bg-zinc-900 sm:px-6 sm:py-12 lg:px-8">
-        <div className="mx-auto grid max-w-[1200px] grid-cols-1 gap-6 sm:gap-8 sm:grid-cols-3">
+        <div className="mx-auto grid max-w-[1200px] grid-cols-1 gap-8 sm:gap-8 sm:grid-cols-3">
           {[
             { k: "Fast.", v: "Rendered by default. Stream findings to Convex as they land — no poll.", icon: Zap },
             { k: "Ergonomic.", v: "⌘K everywhere. Sparse cockpit, progressive disclosure — not widget walls.", icon: Command },
             { k: "Reliable.", v: "Inline automations, then Trigger.dev retries. Publish failures auto-reschedule.", icon: ShieldCheck },
           ].map((s) => (
-            <div key={s.k} className="flex gap-3 sm:block sm:text-left">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-black/10 bg-zinc-50 text-zinc-700 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300 sm:mx-0">
+            <div key={s.k} className="text-center sm:text-left">
+              <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-zinc-50 text-zinc-700 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300 sm:mx-0">
                 <s.icon className="h-4 w-4" />
               </div>
-              <div>
-                <p className="text-[15px] font-semibold text-zinc-900 dark:text-zinc-100">{s.k}</p>
-                <p className="mt-1 text-[13px] leading-5 text-zinc-500 sm:text-sm dark:text-zinc-400">{s.v}</p>
-              </div>
+              <p className="mt-3 text-[15px] font-semibold text-zinc-900 dark:text-zinc-100">{s.k}</p>
+              <p className="mt-1.5 text-sm leading-6 text-zinc-500 dark:text-zinc-400">{s.v}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Surfaces */}
+      {/* Surfaces — with real mocks */}
       <section id="surfaces" className="bg-[#f6f6f3] px-4 py-10 dark:bg-[#121214] sm:px-6 sm:py-16 lg:px-8 lg:py-20">
         <div className="mx-auto grid max-w-[1200px] grid-cols-1 gap-8 sm:gap-10 lg:grid-cols-2 lg:items-center">
           <div>
@@ -328,24 +378,84 @@ function Landing() {
           </div>
           <div className="overflow-hidden rounded-[16px] border border-black/10 bg-white p-2 shadow-[0_20px_60px_rgba(0,0,0,0.10)] sm:rounded-[20px] dark:border-white/10 dark:bg-zinc-900 dark:shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
             <div className="grid grid-cols-2 gap-2">
-              {[
-                { label: "Web — Cockpit", sub: "Audit loop · live" },
-                { label: "Desktop — Agent", sub: "LaunchAgent · systemd" },
-                { label: "TUI — Ops", sub: "Keyboard-first" },
-                { label: "Mobile — Triage", sub: "On-call" },
-              ].map((t) => (
-                <div key={t.label} className="rounded-[12px] border border-black/5 bg-[#fafaf8] p-3 sm:rounded-[14px] sm:p-4 dark:border-white/5 dark:bg-zinc-800">
-                  <p className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">{t.label}</p>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400">{t.sub}</p>
-                  <div className="mt-3 h-16 rounded-lg bg-gradient-to-br from-zinc-100 to-white ring-1 ring-black/5 sm:h-20 dark:from-zinc-700 dark:to-zinc-800 dark:ring-white/5" />
+              {/* Web — Cockpit */}
+              <div className="rounded-[12px] border border-black/5 bg-[#fafaf8] p-3 sm:rounded-[14px] sm:p-4 dark:border-white/5 dark:bg-zinc-800">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-md bg-white ring-1 ring-black/5 dark:bg-zinc-700 dark:ring-white/10"><Monitor className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" /></span>
+                  <div>
+                    <p className="text-xs font-semibold leading-none text-zinc-900 dark:text-zinc-100">Web — Cockpit</p>
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Audit loop · live</p>
+                  </div>
                 </div>
-              ))}
+                <div className="mt-3 space-y-1.5">
+                  <div className="flex items-center gap-1.5 rounded-md bg-white px-2 py-1.5 ring-1 ring-black/5 dark:bg-zinc-700 dark:ring-white/5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /><span className="text-[10px] font-medium text-zinc-700 dark:text-zinc-300">200 OK</span><span className="ml-auto text-[10px] text-zinc-400">/pricing</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 rounded-md bg-white px-2 py-1.5 ring-1 ring-black/5 dark:bg-zinc-700 dark:ring-white/5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-500" /><span className="text-[10px] font-medium text-zinc-700 dark:text-zinc-300">Issues: 12</span><span className="ml-auto h-1 rounded bg-zinc-200 dark:bg-zinc-600" style={{ width: 36 }} />
+                  </div>
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700">
+                    <div className="h-full w-[72%] rounded-full bg-gradient-to-r from-sky-500 to-emerald-500" />
+                  </div>
+                </div>
+              </div>
+              {/* Desktop — Agent */}
+              <div className="rounded-[12px] border border-black/5 bg-[#fafaf8] p-3 sm:rounded-[14px] sm:p-4 dark:border-white/5 dark:bg-zinc-800">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-md bg-white ring-1 ring-black/5 dark:bg-zinc-700 dark:ring-white/10"><Activity className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" /></span>
+                  <div>
+                    <p className="text-xs font-semibold leading-none text-zinc-900 dark:text-zinc-100">Desktop — Agent</p>
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400">LaunchAgent · systemd</p>
+                  </div>
+                </div>
+                <div className="mt-3 rounded-lg bg-white p-2 ring-1 ring-black/5 dark:bg-zinc-700 dark:ring-white/5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-semibold text-zinc-600 dark:text-zinc-300">Local Agent</span><span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:ring-emerald-800"><span className="h-1 w-1 rounded-full bg-emerald-500" />running</span>
+                  </div>
+                  <div className="mt-2 flex gap-1">
+                    <span className="h-1.5 flex-1 rounded-full bg-emerald-500" /><span className="h-1.5 flex-1 rounded-full bg-emerald-500" /><span className="h-1.5 flex-1 rounded-full bg-zinc-200 dark:bg-zinc-600" />
+                  </div>
+                  <p className="mt-1.5 text-[9px] leading-none text-zinc-400 dark:text-zinc-500">2.4k urls · 0.8s avg</p>
+                </div>
+              </div>
+              {/* TUI — Ops */}
+              <div className="rounded-[12px] border border-black/5 bg-[#0a0a0a] p-3 sm:rounded-[14px] sm:p-4 dark:border-white/5">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-md bg-zinc-800 ring-1 ring-white/10"><Terminal className="h-3.5 w-3.5 text-zinc-300" /></span>
+                  <div>
+                    <p className="text-xs font-semibold leading-none text-white">TUI — Ops</p>
+                    <p className="text-[11px] text-zinc-400">Keyboard-first</p>
+                  </div>
+                </div>
+                <div className="mt-3 rounded-lg bg-black p-2 font-mono text-[9px] leading-1.5 text-zinc-300 ring-1 ring-white/10">
+                  <p className="text-zinc-500">$ mc crawl run --rendered</p>
+                  <p><span className="text-emerald-400">✓</span> 2,431 pages</p>
+                  <p><span className="text-amber-400">●</span> 87 issues</p>
+                  <p className="text-sky-400">⌘K to palette</p>
+                </div>
+              </div>
+              {/* Mobile — Triage */}
+              <div className="rounded-[12px] border border-black/5 bg-[#fafaf8] p-3 sm:rounded-[14px] sm:p-4 dark:border-white/5 dark:bg-zinc-800">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-md bg-white ring-1 ring-black/5 dark:bg-zinc-700 dark:ring-white/10"><Smartphone className="h-3.5 w-3.5 text-fuchsia-600 dark:text-fuchsia-400" /></span>
+                  <div>
+                    <p className="text-xs font-semibold leading-none text-zinc-900 dark:text-zinc-100">Mobile — Triage</p>
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400">On-call</p>
+                  </div>
+                </div>
+                <div className="mx-auto mt-3 w-[92px] rounded-[10px] border-[3px] border-zinc-900 bg-white p-1.5 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+                  <div className="mx-auto h-1 w-8 rounded-full bg-zinc-900 dark:bg-zinc-700" />
+                  <div className="mt-2 space-y-1">
+                    <div className="h-6 rounded-md bg-zinc-100 p-1 dark:bg-zinc-800"><div className="h-1.5 w-3/4 rounded bg-zinc-900 dark:bg-zinc-600" /><div className="mt-1 h-1 w-1/2 rounded bg-zinc-300 dark:bg-zinc-600" /></div>
+                    <div className="flex gap-1"><span className="flex-1 rounded bg-sky-500 py-1 text-center text-[7px] font-semibold text-white">Approve</span><span className="flex-1 rounded bg-zinc-200 py-1 text-center text-[7px] font-semibold text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">Hold</span></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Flight */}
       <section id="flight" className="bg-[#FCFCF9] px-4 py-10 dark:bg-[#09090b] sm:px-6 sm:py-16 lg:px-8">
         <div className="mx-auto max-w-[1200px]">
           <div className="mx-auto max-w-2xl text-center">
@@ -363,60 +473,48 @@ function Landing() {
         </div>
       </section>
 
-      {/* Pricing */}
+      {/* Pricing — centered, no overflow, testimonials as carousel below */}
       <section id="pricing" className="bg-white px-4 py-10 dark:bg-zinc-900 sm:px-6 sm:py-16 lg:px-8">
         <div className="mx-auto max-w-[1200px]">
-          <div className="grid gap-8 sm:gap-10 lg:grid-cols-2 lg:items-start">
-            <div>
-              <SectionEyebrow>Pricing</SectionEyebrow>
-              <h2 className="mt-3 text-[26px] font-semibold tracking-[-0.03em] text-zinc-900 sm:text-3xl dark:text-white">Stop renting crawlers. Own the loop.</h2>
-              <p className="mt-3 max-w-[520px] text-[13px] leading-6 text-zinc-600 sm:text-sm dark:text-zinc-400">Screaming Frog depth. Sitebulb prioritisation. Client-ready portal. One flat plan — Starter, Pro, or Enterprise. No per-page meter.</p>
-              <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                {[
-                  { name: "Starter", price: "$49", note: "per month" },
-                  { name: "Pro", price: "$149", note: "per month", featured: true },
-                  { name: "Enterprise", price: "Talk", note: "to us" },
-                ].map((p) => (
-                  <div key={p.name} className={`rounded-2xl border p-4 text-center ${p.featured ? "border-zinc-900 bg-zinc-900 text-white shadow-lg dark:border-white dark:bg-white dark:text-zinc-900" : "border-black/10 bg-white dark:border-white/10 dark:bg-zinc-800"}`}>
-                    <p className={`text-xs font-semibold uppercase tracking-widest ${p.featured ? "text-zinc-400 dark:text-zinc-500" : "text-zinc-500 dark:text-zinc-400"}`}>{p.name}</p>
-                    <p className="mt-2 text-xl font-semibold tracking-tight">{p.price}</p>
-                    <p className={`text-xs ${p.featured ? "text-zinc-400 dark:text-zinc-500" : "text-zinc-500 dark:text-zinc-400"}`}>{p.note}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:gap-3">
-                <Show when="signed-out">
-                  <SignInButton mode="modal" fallbackRedirectUrl="/app">
-                    <span className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-zinc-900 px-5 py-3 text-sm font-semibold text-white sm:w-auto sm:py-2.5 dark:bg-white dark:text-zinc-900">Start free <ArrowRight className="h-4 w-4" /></span>
-                  </SignInButton>
-                  <Link to="/portal" className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-black/10 bg-white px-5 py-3 text-sm font-medium text-zinc-700 sm:w-auto sm:py-2.5 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">Client portal preview</Link>
-                </Show>
-                <Show when="signed-in">
-                  <Link to="/app" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-zinc-900 px-5 py-3 text-sm font-semibold text-white sm:w-auto sm:py-2.5 dark:bg-white dark:text-zinc-900">Mission Control <ArrowRight className="h-4 w-4" /></Link>
-                </Show>
-              </div>
+          <div className="mx-auto max-w-[720px] text-center">
+            <SectionEyebrow>Pricing</SectionEyebrow>
+            <h2 className="mt-3 text-[26px] font-semibold tracking-[-0.03em] text-zinc-900 sm:text-3xl dark:text-white">Stop renting crawlers. Own the loop.</h2>
+            <p className="mx-auto mt-3 max-w-[560px] text-[13px] leading-6 text-zinc-600 sm:text-sm dark:text-zinc-400">Screaming Frog depth. Sitebulb prioritisation. Client-ready portal. One flat plan — Starter, Pro, or Enterprise. No per-page meter.</p>
+
+            <div className="mx-auto mt-6 grid max-w-[560px] grid-cols-1 gap-3 sm:grid-cols-3">
+              {[
+                { name: "Starter", price: "$49", note: "per month" },
+                { name: "Pro", price: "$149", note: "per month", featured: true },
+                { name: "Enterprise", price: "Talk", note: "to us" },
+              ].map((p) => (
+                <div key={p.name} className={`min-w-0 rounded-2xl border p-4 text-center ${p.featured ? "border-zinc-900 bg-zinc-900 text-white shadow-lg dark:border-white dark:bg-white dark:text-zinc-900" : "border-black/10 bg-white dark:border-white/10 dark:bg-zinc-800"}`}>
+                  <p className={`text-xs font-semibold uppercase tracking-widest ${p.featured ? "text-zinc-400 dark:text-zinc-500" : "text-zinc-500 dark:text-zinc-400"}`}>{p.name}</p>
+                  <p className="mt-2 text-xl font-semibold tracking-tight">{p.price}</p>
+                  <p className={`text-xs ${p.featured ? "text-zinc-400 dark:text-zinc-500" : "text-zinc-500 dark:text-zinc-400"}`}>{p.note}</p>
+                </div>
+              ))}
             </div>
 
-            <div className="rounded-[16px] border border-black/5 bg-[#f6f6f3] p-4 sm:rounded-[20px] sm:p-6 dark:border-white/5 dark:bg-zinc-800">
-              <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Loved by operators</p>
-              <div className="mt-4 space-y-3 sm:space-y-4">
-                {[
-                  { q: "Finally a crawler we own. The portal alone killed our PDF busywork.", a: "Agency Owner · 32 locations" },
-                  { q: "The dual CRM is the unlock — same tool for us and clients, no sync hell.", a: "Ops Lead · Multi-tenant" },
-                  { q: "TUI + ⌘K. I live in there. Feels like Raycast for local SEO.", a: "Technical SEO · Power user" },
-                ].map((t) => (
-                  <div key={t.q} className="rounded-2xl border border-black/5 bg-white p-4 shadow-sm dark:border-white/5 dark:bg-zinc-900">
-                    <p className="text-sm leading-6 text-zinc-700 dark:text-zinc-300">“{t.q}”</p>
-                    <p className="mt-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">— {t.a}</p>
-                  </div>
-                ))}
-              </div>
+            <div className="mt-6 flex flex-col items-stretch justify-center gap-2.5 sm:flex-row sm:items-center sm:gap-3">
+              <Show when="signed-out">
+                <SignInButton mode="modal" fallbackRedirectUrl="/app">
+                  <span className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-zinc-900 px-5 py-3 text-sm font-semibold text-white sm:w-auto sm:py-2.5 dark:bg-white dark:text-zinc-900">Start free <ArrowRight className="h-4 w-4" /></span>
+                </SignInButton>
+                <Link to="/portal" className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-black/10 bg-white px-5 py-3 text-sm font-medium text-zinc-700 sm:w-auto sm:py-2.5 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">Client portal preview</Link>
+              </Show>
+              <Show when="signed-in">
+                <Link to="/app" className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-zinc-900 px-5 py-3 text-sm font-semibold text-white sm:w-auto sm:py-2.5 dark:bg-white dark:text-zinc-900">Mission Control <ArrowRight className="h-4 w-4" /></Link>
+              </Show>
             </div>
+          </div>
+
+          <div className="mx-auto mt-10 max-w-[760px]">
+            <p className="text-center text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Loved by operators</p>
+            <TestimonialCarousel />
           </div>
         </div>
       </section>
 
-      {/* Final CTA */}
       <section className="border-y border-black/[0.06] bg-[#f6f6f3] px-4 py-8 dark:border-white/10 dark:bg-zinc-900 sm:px-6 sm:py-14 lg:px-8">
         <div className="mx-auto flex max-w-[1200px] flex-col items-center gap-6 text-center lg:flex-row lg:justify-between lg:text-left">
           <div>
@@ -441,7 +539,6 @@ function Landing() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-white px-4 py-8 dark:bg-zinc-900 sm:px-6 sm:py-12 lg:px-8">
         <div className="mx-auto grid max-w-[1200px] grid-cols-2 gap-6 text-sm sm:gap-8 lg:grid-cols-5">
           <div className="col-span-2 lg:col-span-1">
