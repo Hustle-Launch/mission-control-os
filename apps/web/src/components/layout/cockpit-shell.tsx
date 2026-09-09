@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { OrganizationSwitcher, UserButton, useAuth } from "@clerk/tanstack-react-start";
+import { OrganizationSwitcher, UserButton } from "@clerk/tanstack-react-start";
+import { useMcAuth } from "@/lib/clerk-auth";
 import { LogoLockup } from "@/components/mc/logo";
 import { cn } from "cnfast";
 import { useIsAgencyAdmin } from "@/lib/auth-guards";
@@ -30,7 +31,7 @@ export function CockpitShell({
   children: React.ReactNode;
   title?: string;
 }) {
-  const { isSignedIn, orgRole } = useAuth();
+  const { isSignedIn, orgRole } = useMcAuth();
   const isAdmin = useIsAgencyAdmin();
 
   return (

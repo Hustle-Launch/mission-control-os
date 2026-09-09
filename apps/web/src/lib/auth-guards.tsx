@@ -1,14 +1,13 @@
-import { useAuth, useOrganization, useSession } from "@clerk/tanstack-react-start";
+import { useOrganization, useSession } from "@clerk/tanstack-react-start";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Button } from "@/components/mc/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/mc/card";
+import { useMcAuth } from "@/lib/clerk-auth";
 
 /** Agency cockpit: must be signed in + active Clerk Organization (ADR-0015). */
 export function AgencyGate({ children }: { children: React.ReactNode }) {
-  const { isLoaded, isSignedIn, orgId, orgRole } = useAuth({
-    treatPendingAsSignedOut: false,
-  });
+  const { isLoaded, isSignedIn, orgId, orgRole } = useMcAuth();
   const { session, isLoaded: sessionLoaded } = useSession();
   const { organization } = useOrganization();
   const navigate = useNavigate();
@@ -75,12 +74,42 @@ export function AgencyGate({ children }: { children: React.ReactNode }) {
 
 /** Client portal: signed in, but must NOT require Agency org membership. */
 export function PortalGate({ children }: { children: React.ReactNode }) {
-  const { isLoaded, isSignedIn } = useAuth();
+  // Pending choose-organization must not look signed-out (#51). Portal ACL is
+  // Convex grants (ADR-0026); do not force org activation here.
+  const { isLoaded, isSignedIn } = useMcAuth();
+  const { session, isLoaded: sessionLoaded } = useSession();
+  const pendingOrgTask = session?.currentTask?.key === "choose-organization";
 
-  if (!isLoaded) {
+  if (!isLoaded || !sessionLoaded) {
     return (
       <div className="min-h-dvh flex items-center justify-center text-[var(--color-mocha-subtext0)]">
         Loading…
+      </div>
+    );
+  }
+
+  // If Clerk still emits choose-organization (dashboard "org required"), finish
+  // that session task on the agency surface — then return to portal.
+  if (pendingOrgTask) {
+    return (
+      <div className="min-h-dvh flex items-center justify-center px-4">
+        <Card className="max-w-[28rem] w-full">
+          <CardHeader>
+            <CardTitle>Finish account setup</CardTitle>
+            <CardDescription>
+              Your sign-in still needs a workspace step before the client portal can load. This is a
+              Clerk session task — not a sign-out.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3">
+            <Link to="/select-agency" className="w-full">
+              <Button className="w-full">Continue setup</Button>
+            </Link>
+            <p className="text-xs text-center text-[var(--color-mocha-subtext0)]">
+              Portal access uses email grants, not Agency org seats.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -109,7 +138,7 @@ export function PortalGate({ children }: { children: React.ReactNode }) {
 }
 
 export function useIsAgencyAdmin() {
-  const { orgRole, has } = useAuth();
+  const { orgRole, has } = useMcAuth();
   if (has) {
     try {
       return has({ role: "org:admin" });
