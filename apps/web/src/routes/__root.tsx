@@ -6,7 +6,8 @@ import {
   Scripts,
   createRootRoute,
 } from "@tanstack/react-router";
-import { ClerkProvider, useAuth } from "@clerk/tanstack-react-start";
+import { ClerkProvider } from "@clerk/tanstack-react-start";
+import { useAuthForConvex } from "@/lib/clerk-auth";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { CommandPaletteHost } from "@/components/layout/command-palette";
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary";
@@ -81,7 +82,7 @@ function AppProviders({ children }: { children: React.ReactNode }) {
 
   return (
     <ClerkProvider {...clerkProps}>
-      <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+      <ConvexProviderWithClerk client={convex} useAuth={useAuthForConvex}>
         {children}
       </ConvexProviderWithClerk>
     </ClerkProvider>

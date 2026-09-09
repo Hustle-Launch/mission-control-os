@@ -1,0 +1,31 @@
+name: CI (Blacksmith)
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  typecheck-and-auth-smoke:
+    name: Typecheck + auth pending smoke
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.2.0"
+
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Auth pending-pattern smoke (#50 / #51)
+        run: bun run check:auth-pending
+
+      - name: Workspace Typecheck
+        run: bun run typecheck

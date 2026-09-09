@@ -2,12 +2,12 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
-  useAuth,
   useClerk,
   useOrganizationList,
   useSession,
   useUser,
 } from "@clerk/tanstack-react-start";
+import { useMcAuth } from "@/lib/clerk-auth";
 import { LogoLockup } from "@/components/mc/logo";
 import { Button } from "@/components/mc/button";
 import { Input } from "@/components/mc/input";
@@ -48,8 +48,28 @@ function goToApp() {
   window.location.assign("/app");
 }
 
+const ORG_ACTION_TIMEOUT_MS = 25_000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const t = window.setTimeout(() => {
+      reject(new Error(`${label} timed out after ${Math.round(ms / 1000)}s — try again`));
+    }, ms);
+    promise.then(
+      (v) => {
+        window.clearTimeout(t);
+        resolve(v);
+      },
+      (e) => {
+        window.clearTimeout(t);
+        reject(e);
+      },
+    );
+  });
+}
+
 function SelectAgencyPage() {
-  const { isLoaded, isSignedIn, orgId } = useAuth({ treatPendingAsSignedOut: false });
+  const { isLoaded, isSignedIn, orgId } = useMcAuth();
   const { session, isLoaded: sessionLoaded } = useSession();
   const { user } = useUser();
   const clerk = useClerk();
@@ -97,11 +117,8 @@ function SelectAgencyPage() {
           goToApp();
         },
       };
-      if (setActive) {
-        await setActive(params);
-      } else {
-        await clerk.setActive(params);
-      }
+      const run = setActive ? setActive(params) : clerk.setActive(params);
+      await withTimeout(Promise.resolve(run), ORG_ACTION_TIMEOUT_MS, "Activating agency");
       // Fallback if navigate hook is skipped by Clerk version
       goToApp();
     } catch (e) {
@@ -120,7 +137,11 @@ function SelectAgencyPage() {
     setBusy(true);
     setError(null);
     try {
-      const org = await clerk.createOrganization({ name: trimmed });
+      const org = await withTimeout(
+        clerk.createOrganization({ name: trimmed }),
+        ORG_ACTION_TIMEOUT_MS,
+        "Creating agency",
+      );
       await activateOrg(org.id);
     } catch (e) {
       console.error("createOrganization", e);
