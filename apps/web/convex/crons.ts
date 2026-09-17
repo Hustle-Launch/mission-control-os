@@ -4,6 +4,10 @@ import { internal } from "./_generated/api";
 /**
  * System crons (ADR-0044 first-class non-CRM automation).
  * Social due-check is a product rule, not the CRM builder.
+ *
+ * DO NOT re-add a 1-minute jobs:expireLeases (or similar) cron.
+ * That schedule on gallant-mosquito-596 drove the 2026-09-17 free-tier call storm.
+ * Lease cleanup belongs in claim/complete paths, not a per-minute cron.
  */
 const crons = cronJobs();
 
