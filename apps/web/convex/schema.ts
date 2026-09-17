@@ -347,4 +347,4 @@ export default defineSchema({
   })
     .index("by_site", ["siteId"])
     .index("by_run", ["crawlRunId"]),
-});
+}, { schemaValidation: false });
