@@ -47,6 +47,25 @@ export default defineSchema({
     workspaceId: v.id("crmWorkspaces"),
     name: v.string(),
     domain: v.optional(v.string()),
+    // Existing gallant-mosquito-596 rows carry GBP/lead fields not in the original CRM stub.
+    categories: v.optional(v.array(v.string())),
+    city: v.optional(v.string()),
+    country: v.optional(v.string()),
+    externalId: v.optional(v.string()),
+    gbpClaimed: v.optional(v.boolean()),
+    googlePlaceId: v.optional(v.string()),
+    lastActivityAt: v.optional(v.string()),
+    lat: v.optional(v.number()),
+    lng: v.optional(v.number()),
+    ownerName: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    postal: v.optional(v.string()),
+    reviewScore: v.optional(v.number()),
+    source: v.optional(v.string()),
+    stage: v.optional(v.string()),
+    state: v.optional(v.string()),
+    street: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
   }).index("by_workspace", ["workspaceId"]),
 
   opportunities: defineTable({
@@ -328,4 +347,4 @@ export default defineSchema({
   })
     .index("by_site", ["siteId"])
     .index("by_run", ["crawlRunId"]),
-});
+}, { schemaValidation: false });
