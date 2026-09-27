@@ -10,6 +10,7 @@ import { ClerkProvider } from "@clerk/tanstack-react-start";
 import { useAuthForConvex } from "@/lib/clerk-auth";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { CommandPaletteHost } from "@/components/layout/command-palette";
+import { KeymapOverlayHost } from "@/components/layout/keymap-overlay";
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary";
 import { NotFound } from "@/components/NotFound";
 import { convex } from "@/lib/convex";
@@ -53,6 +54,7 @@ function RootComponent() {
     <AppProviders>
       <Outlet />
       <CommandPaletteHost />
+      <KeymapOverlayHost />
     </AppProviders>
   );
 }
