@@ -13,3 +13,7 @@ target
 apps/web/src/routeTree.gen.ts.bak
 .vercel
 apps/ios/.build/
+
+# Cloudflare Workers local state.
+.wrangler/
+.dev.vars*

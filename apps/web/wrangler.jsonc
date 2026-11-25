@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mission-control-os",
+  "main": "src/server.ts",
+  "compatibility_date": "2026-11-24",
+  "observability": { "enabled": true },
+  "vars": { "MC_ENV": "production" }
+  // Secrets (wrangler secret put): CLERK_SECRET_KEY, RESEND_API_KEY, MC_WEB_URL, MC_CONTROL_PLANE.
+}
