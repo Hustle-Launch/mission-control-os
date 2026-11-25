@@ -38,10 +38,11 @@ export async function handleApi(req: Request, pathname: string): Promise<Respons
 
   const path = pathname.replace(/\/$/, "") || pathname;
 
-  // Gate memory stubs on Vercel *production* only (not every NODE_ENV=production
-  // build — preview deployments need dual-write for agent/CRM smoke).
-  const isVercelProduction = process.env.VERCEL_ENV === "production";
-  if (isVercelProduction && process.env.MC_ALLOW_MEMORY_API !== "1") {
+  // Gate memory stubs on production only (VERCEL_ENV on Vercel, MC_ENV in wrangler.jsonc on
+  // Workers), not every NODE_ENV=production build: previews need dual-write for agent/CRM smoke.
+  const isProduction =
+    process.env.VERCEL_ENV === "production" || process.env.MC_ENV === "production";
+  if (isProduction && process.env.MC_ALLOW_MEMORY_API !== "1") {
     return err(
       "use_convex",
       "In-memory /api dual-write disabled in production — use Convex SoT",

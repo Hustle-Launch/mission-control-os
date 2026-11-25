@@ -1,3 +1,4 @@
+import { cloudflare } from "@cloudflare/vite-plugin";
 import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
@@ -8,6 +9,8 @@ import { fileURLToPath } from "node:url";
 import { handleApi } from "./src/server/api.ts";
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
+// `vercel build` sets VERCEL=1 and keeps Nitro; every other build targets Cloudflare Workers.
+const vercel = Boolean(process.env.VERCEL);
 
 /** Dev-only dual-write /api middleware (disabled in production via handleApi). */
 function mcApiPlugin(): Plugin {
@@ -46,6 +49,8 @@ function mcApiPlugin(): Plugin {
 }
 
 export default defineConfig({
+  // Edge-cached HTML is keyed per build so a deploy never serves pages that point at removed assets.
+  define: { __BUILD_ID__: JSON.stringify(Date.now().toString(36)) },
   server: {
     host: "127.0.0.1",
     port: 5173,
@@ -58,12 +63,13 @@ export default defineConfig({
     },
   },
   plugins: [
+    ...(vercel ? [] : [cloudflare({ viteEnvironment: { name: "ssr" } })]),
     tailwindcss(),
     tanstackStart({
       srcDirectory: "src",
     }),
     react(),
-    nitro(),
+    ...(vercel ? [nitro()] : []),
     mcApiPlugin(),
   ],
 });
